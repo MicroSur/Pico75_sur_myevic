@@ -1444,6 +1444,10 @@ __myevic__ void InitDataFlash()
 				break;
 		}
 	}
+        else if ( ISPICO75 )
+        {
+                DisplayModel = 3;
+        }
 	else
 	{
 		DisplayModel = 0;
@@ -1602,7 +1606,7 @@ __myevic__ uint16_t GetShuntRezValue()
 				break;
 		}
         }
-        else if ( ISIKU200 )
+        else if ( ISIKU200 || ISPICO75 )
         {
                 rez = 102;
         }        

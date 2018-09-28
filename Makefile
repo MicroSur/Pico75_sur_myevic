@@ -1,4 +1,4 @@
-TARGET := myevic
+TARGET := pico
 
 # We make the following assumptions on Windows:
 # arm-none-eabi gcc and binutils are compiled for Windows,
@@ -15,6 +15,7 @@ OBJS := $(NUVOSDK)/Device/Nuvoton/M451Series/Source/system_M451Series.o \
 	$(NUVOSDK)/StdDriver/src/fmc.o \
 	$(NUVOSDK)/StdDriver/src/gpio.o \
 	$(NUVOSDK)/StdDriver/src/spi.o \
+	$(NUVOSDK)/StdDriver/src/i2c.o \
 	$(NUVOSDK)/StdDriver/src/sys.o \
 	$(NUVOSDK)/StdDriver/src/timer.o \
 	$(NUVOSDK)/StdDriver/src/rtc.o \
@@ -44,9 +45,6 @@ MYEVIC_OBJS := src/myevic.o \
 	src/strings.o \
 	src/meusbd.o \
 	src/vcom.o \
-	src/flappy.o \
-	src/fbdata.o \
-	src/tetris.o \
 	src/fonts.o \
 	src/display.o \
 	src/SSD1306.o \

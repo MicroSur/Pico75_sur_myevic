@@ -5,8 +5,6 @@
 #include "myrtc.h"
 #include "dataflash.h"
 #include "miscs.h"
-#include "flappy.h"
-#include "tetris.h"
 #include "meusbd.h"
 #include "atomizer.h"
 #include "battery.h"
@@ -2545,48 +2543,56 @@ __myevic__ void Object3DOnClick()
 
 __myevic__ void GameMEnter()
 {
-    CurrentMenuItem = FBSpeed;
+    //CurrentMenuItem = FBSpeed;
 }
 
 __myevic__ void GameISelect()
 {
+/*
     if ( CurrentMenuItem < 3 )
     {
 	FBSpeed = CurrentMenuItem;
 	UpdateDFTimer = 50;
     }
+*/
 }
 
 __myevic__ void GameIClick()
 {
+/*
     if ( CurrentMenuItem < 3 )
     {
 	if ( FBSpeed > 2 ) FBSpeed = 1;
         fbStartGame();
     }
+*/
 }
 
 __myevic__ void GameTtMEnter()
 {
-	CurrentMenuItem = dfTTSpeed;
+	//CurrentMenuItem = dfTTSpeed;
 }
 
 __myevic__ void GameTtISelect()
 {
+/*
     if ( CurrentMenuItem < 3 )
     {
 	dfTTSpeed = CurrentMenuItem;
 	UpdateDFTimer = 50;
     }
+*/
 }
 
 __myevic__ void GameTtIClick()
 {
+/*
     if ( CurrentMenuItem < 3 )
     {
         if ( dfTTSpeed > 2 ) dfTTSpeed = 1;
         ttStartGame();
     }
+*/
 }
 
 //-----------------------------------------------------------------------------

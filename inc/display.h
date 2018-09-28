@@ -8,6 +8,7 @@
 //-------------------------------------------------------------------------
 
 #define SCREEN_BUFFER_SIZE 0x400
+#define SCREEN_BUFFER_SIZE_96_16 0xC0
 
 //-------------------------------------------------------------------------
 
@@ -29,6 +30,7 @@ extern const uint8_t ByteMaskLeft[];
 
 extern uint8_t DisplayModel;
 extern uint8_t ScreenBuffer[];
+extern uint8_t ScreenBuffer_96_16[];
 
 extern const image_t **Images;
 
@@ -40,6 +42,7 @@ extern const image_t *font0_1306[];
 //-------------------------------------------------------------------------
 
 extern void InitSPI0();
+extern void InitI2C();
 extern void InitDisplay();
 extern void DisplaySendCommand( const uint8_t );
 extern void DisplaySendData( const uint8_t*, const uint32_t );
@@ -83,15 +86,31 @@ extern void DrawCircle( int xc, int yc, int r, int color, int fill );
 extern void DrawPixel(int x, int y, int color);
 
 extern void SSD1306_Init();
+extern void SSD1306_96_16_Init();
+
 extern void SSD1306_WriteBytes( const int isData, const uint8_t data[], const int len );
+
 extern void SSD1306_ClearBuffer();
+extern void SSD1306_96_16_ClearBuffer();
+
 extern void SSD1306_Refresh();
+extern void SSD1306_96_16_Refresh();
+
 extern void SSD1306_ScreenOff();
 extern void SSD1306_SetContrast( const uint8_t c );
+
 extern void SSD1306_Plot( int x, int y, int color );
+extern void SSD1306_96_16_Plot( int x, int y, int color );
+
 extern uint32_t SSD1306_Image( int x, int y, uint8_t img, int color );
+extern uint32_t SSD1306_96_16_Image( int x, int y, uint8_t img, int color );
+
 extern uint32_t SSD1306_Bitmap( int x, int y, const image_t *image, int color );
+extern uint32_t SSD1306_96_16_Bitmap( int x, int y, const image_t *image, int color );
+
 extern void SSD1306_Screen2Bitmap( uint8_t *pu8Bitmap );
+extern void SSD1306_96_16_Screen2Bitmap( uint8_t *pu8Bitmap );
+
 extern void SSD1306_SetInverse( const uint8_t i );
 
 extern void SSD1327_Init();

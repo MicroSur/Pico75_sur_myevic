@@ -148,6 +148,17 @@ __myevic__ void InitGPIO()
 		SYS->GPD_MFPL |= SYS_GPD_MFPL_PD0MFP_GPIO|SYS_GPD_MFPL_PD1MFP_GPIO;
 	}
         
+        if ( ISPICO75 )
+        {
+                    //#define SYS_GPA_MFPL_PA2MFP_Pos          (8) 
+                    //#define SYS_GPA_MFPL_PA3MFP_Pos          (12)
+                    
+            SYS->GPA_MFPL &= ~(SYS_GPA_MFPL_PA2MFP_Msk|SYS_GPA_MFPL_PA3MFP_Msk);
+            SYS->GPA_MFPL |= (SYS_GPA_MFPL_PA2MFP_I2C0_SDA|SYS_GPA_MFPL_PA3MFP_I2C0_SCL); //0x400 0x4000 = 0x4400
+            GPIO_SetMode( PA, GPIO_PIN_PIN2_Msk, GPIO_MODE_OUTPUT );
+            GPIO_SetMode( PA, GPIO_PIN_PIN3_Msk, GPIO_MODE_OUTPUT );
+        }
+        
 	// PC0 = PWM0 CH0
 	BBC_Configure( BBC_PWMCH_BUCK, 1 );     // 0 1
         
@@ -289,6 +300,8 @@ __myevic__ void InitGPIO()
 	}
 
 	// SPI0 (Display control)
+        if ( !ISPICO75 )
+        {
 	PE10 = 0;                                                               // 0x40004928
 	GPIO_SetMode( PE, GPIO_PIN_PIN10_Msk, GPIO_MODE_OUTPUT );               // 0x40004100 (0x400 = 0x40004928 ASR 0x14) 1
         
@@ -298,6 +311,7 @@ __myevic__ void InitGPIO()
             PE12 = 0;                                                               // 0x40004930
         
 	GPIO_SetMode( PE, GPIO_PIN_PIN12_Msk, GPIO_MODE_OUTPUT );               // 0x40004100 (0x1000 = 0x40004930 ASR 0x12) 1
+        }
         
 	// LED Control
 	if ( ISEGRIPII || ISEVICAIO )

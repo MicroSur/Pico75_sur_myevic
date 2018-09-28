@@ -7,8 +7,6 @@
 #include "dataflash.h"
 #include "atomizer.h"
 #include "battery.h"
-#include "flappy.h"
-#include "tetris.h"
 #include "timers.h"
 #include "meusbd.h"
 
@@ -627,29 +625,6 @@ __myevic__ void GetUserInput()
 			if ( IsMenuScreen() )
 			{
 				Event = EVENT_EXIT_MENUS;
-			}
-			else if ( !dfStatus.off )
-			{
-				if ( !gFlags.playing_fb && !gFlags.playing_tt)
-				{
-					Event = EVENT_ENTER_MENUS;
-				}
-				else
-				{
-                                    Event = 0;
-                                    if ( gFlags.playing_fb )
-                                    {
-					gFlags.playing_fb = 0;					
-					fbInitTimeouts();
-                                    }
-                                    else if ( gFlags.playing_tt )
-                                    {
-					gFlags.playing_tt = 0;
-					ttInitTimeouts();
-                                    }
-                                    MainView();
-
-				}                                
 			}
                 }
                 else if ( UserInputs == 7 ) //all 3 buttons
@@ -1743,21 +1718,7 @@ __myevic__ int CustomEvents()
 			EditItemIndex = 0;
 			break;
 */
-                        
-                case 41:
-			//fbStartGame();
-                        CurrentMenu = &GameMenu; 
-                        CurrentMenuItem = FBSpeed;
-                        SetScreen( 102, 15 );                        
-			break;
-                        
-                case EVENT_TETRIS:
- 			//ttStartGame();
-                        CurrentMenu = &GameTtMenu; 
-                        CurrentMenuItem = dfTTSpeed;
-                        SetScreen( 102, 15 );
-			break;
-                        
+                                               
                 case EVENT_SAVER:
                         gFlags.animready = 0;
                         SetScreen( 60, GetScreenProtection() );

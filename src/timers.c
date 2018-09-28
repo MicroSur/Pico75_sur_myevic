@@ -5,8 +5,6 @@
 #include "myrtc.h"
 #include "battery.h"
 #include "atomizer.h"
-#include "flappy.h"
-#include "tetris.h"
 #include "display.h"
 #include "miscs.h"
 
@@ -111,25 +109,6 @@ __myevic__ void TMR2_IRQHandler()
 		if ( !(++TMR2Counter % 10) )
 		{
 			gFlags.tick_100hz = 1;
-		}
-
-		if ( gFlags.playing_fb )
-                {
-			if ( (!(TMR2Counter % 20) && FBSpeed == 0)
-			  || (!(TMR2Counter % 13) && FBSpeed == 1)
-			  || (!(TMR2Counter % 10) && FBSpeed == 2) )
-			{
-				fbTickTimeouts();
-			}
-		}
-                if ( gFlags.playing_tt )
-		{
-			if ( (!(TMR2Counter % 20) && dfTTSpeed == 0)
-			  || (!(TMR2Counter % 10) && (dfTTSpeed == 1 || dfTTSpeed == 2)))
-			//  || (!(TMR2Counter % 5) && dfTTSpeed == 2) )  //5 10 15
-			{
-				ttTickTimeouts();
-			}
 		}
 	}
 }

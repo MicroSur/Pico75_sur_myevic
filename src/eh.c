@@ -9,8 +9,6 @@
 #include "timers.h"
 #include "meadc.h"
 #include "atomizer.h"
-#include "flappy.h"
-#include "tetris.h"
 
 //=========================================================================
 // Globals

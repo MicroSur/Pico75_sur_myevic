@@ -11,8 +11,6 @@
 #include "megpio.h"
 #include "meusbd.h"
 #include "miscs.h"
-#include "flappy.h"
-#include "tetris.h"
 
 
 //=========================================================================
@@ -171,6 +169,8 @@ void InitDevices()
 	// SPI0 CLK = PCLK0/1
         //CLK_SetModuleClock(SPI0_MODULE, CLK_CLKSEL2_SPI0SEL_PCLK0, 0);
 	CLK_EnableModuleClock( SPI0_MODULE );
+        
+        CLK_EnableModuleClock(I2C0_MODULE);
 
 	// EADC CLK = PCLK1/8 (9MHz)
 	CLK_EnableModuleClock( EADC_MODULE );
@@ -242,7 +242,15 @@ __myevic__ void InitHardware()
 	//	gFlags.noclock = 1;
 	//}
 
-	InitSPI0();
+	if ( DisplayModel == 3 )
+        {
+            InitI2C();
+        }
+        else
+        {
+            InitSPI0();
+        }
+        
 	InitEADC();
 	InitPWM();
 	InitTimers();
@@ -532,7 +540,7 @@ __myevic__ void DevicesOnOff( int off )
                 }
                 
 		if ( ISRX300 || ISPRIMO1 || ISPRIMO2 || ISPREDATOR || ISGEN3 || ISRX2 
-                        || ISINVOKE || ISSINFJ200 || ISRX217 || ISGEN2 )
+                        || ISINVOKE || ISSINFJ200 || ISRX217 || ISGEN2 || ISPICO75 )
 		{
                     if ( ISRX300 || ISRX2 || ISSINFJ200 || ISRX217 || ISGEN2 )
                     {
@@ -546,7 +554,7 @@ __myevic__ void DevicesOnOff( int off )
                     
                     if ( !ISRX2 && !ISSINFJ200 && !ISRX217 && !ISGEN2 )
                     {
-			PA3 = 0;                                                // 4000480C
+			PA3 = 0;            //pico                                    // 4000480C
 			PA2 = 0;                                                // 40004808
                     }
                     //ISIKU200  PC2 = 0; PC3 = 0 ^^
@@ -567,6 +575,15 @@ __myevic__ void DevicesOnOff( int off )
 			GPIO_SetMode( PD, GPIO_PIN_PIN7_Msk, GPIO_MODE_OUTPUT );
 		}
 
+                if ( ISPICO75 )
+                {
+                SYS->GPA_MFPL &= ~(SYS_GPA_MFPL_PA2MFP_Msk|SYS_GPA_MFPL_PA3MFP_Msk);
+                SYS->GPA_MFPL |= (SYS_GPA_MFPL_PA2MFP_GPIO|SYS_GPA_MFPL_PA3MFP_GPIO);
+                GPIO_SetMode( PA, GPIO_PIN_PIN2_Msk, GPIO_MODE_OUTPUT );
+                GPIO_SetMode( PA, GPIO_PIN_PIN3_Msk, GPIO_MODE_OUTPUT );
+                }
+                else
+                {
 		SYS->GPE_MFPH &= ~(SYS_GPE_MFPH_PE11MFP_Msk|SYS_GPE_MFPH_PE12MFP_Msk|SYS_GPE_MFPH_PE13MFP_Msk);
 		SYS->GPE_MFPH |= (SYS_GPE_MFPH_PE11MFP_GPIO|SYS_GPE_MFPH_PE12MFP_GPIO|SYS_GPE_MFPH_PE13MFP_GPIO);
                 
@@ -577,7 +594,8 @@ __myevic__ void DevicesOnOff( int off )
 		PE13 = 0;                                                       // 40004934
 		GPIO_SetMode( PE, GPIO_PIN_PIN13_Msk, GPIO_MODE_OUTPUT );
 		PE10 = 0;                                                       // 40004928
-
+                }
+                
 		GPIO_EnableInt( PE, 0, GPIO_INT_BOTH_EDGE );                    // 4100
 		GPIO_EnableInt( PD, 2, GPIO_INT_BOTH_EDGE );                    // 40C0
 		GPIO_EnableInt( PD, 3, GPIO_INT_BOTH_EDGE );                    // 40C0
@@ -643,9 +661,20 @@ __myevic__ void DevicesOnOff( int off )
 			PF2 = 1;                                                // 4948
 		}
 
+                if ( ISPICO75 )
+                {
+                    //#define SYS_GPA_MFPL_PA2MFP_Pos          (8) 
+                    //#define SYS_GPA_MFPL_PA3MFP_Pos          (12)
+                    
+                SYS->GPA_MFPL &= ~(SYS_GPA_MFPL_PA2MFP_Msk|SYS_GPA_MFPL_PA3MFP_Msk);
+                SYS->GPA_MFPL |= (SYS_GPA_MFPL_PA2MFP_I2C0_SDA|SYS_GPA_MFPL_PA3MFP_I2C0_SCL); //0x400 0x4000 = 0x4400
+                }
+                else
+                {
 		SYS->GPE_MFPH &= ~(SYS_GPE_MFPH_PE11MFP_Msk|SYS_GPE_MFPH_PE12MFP_Msk|SYS_GPE_MFPH_PE13MFP_Msk);
 		SYS->GPE_MFPH |= (SYS_GPE_MFPH_PE11MFP_SPI0_MOSI0|SYS_GPE_MFPH_PE12MFP_SPI0_SS|SYS_GPE_MFPH_PE13MFP_SPI0_CLK);
-
+                }
+                
                 if ( !ISRX2 && !ISSINP80 && !ISINVOKE && !ISRX217 && !ISGEN2 )
                 {
                         GPIO_SetMode( PD, GPIO_PIN_PIN0_Msk, GPIO_MODE_INPUT );         // 40C0 1 0
@@ -1057,45 +1086,6 @@ __myevic__ void Main()
         
 	while ( 1 )
 	{            
-            	while ( gFlags.playing_fb || gFlags.playing_tt )
-		{
-                        if ( gFlags.playing_fb )
-                                fbCallTimeouts();
-                        else
-                                ttCallTimeouts();
-                            
-			if ( gFlags.tick_100hz )
-			{
-				// 100Hz
-				gFlags.tick_100hz = 0;
-				ResetWatchDog();
-				TimedItems();
-				//SleepIfIdle();
-				GetUserInput();
-                                if ( !SleepTimer )
-                                {
-                                    if ( gFlags.playing_fb )
-                                    {
-                                        gFlags.playing_fb = 0;
-					fbInitTimeouts();
-                                    }
-                                    else
-                                    {
-                                        gFlags.playing_tt = 0;
-					ttInitTimeouts();
-                                    }   
-                                }
-                                if ( !PE0 || !PD2 || !PD3 )
-                                    SleepTimer = 3000; //30 sec
-			}
-                        
-			if ( gFlags.tick_10hz )
-			{
-				// 10Hz
-				gFlags.tick_10hz = 0;
-				DataFlashUpdateTick();
-			}
-		}
                 
 		if ( gFlags.firing )
 		{

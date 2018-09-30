@@ -89,6 +89,7 @@ extern void SSD1306_Init();
 extern void SSD1306_96_16_Init();
 
 extern void SSD1306_WriteBytes( const int isData, const uint8_t data[], const int len );
+extern void SSD1306_96_16_WriteBytes( const int isData, const uint8_t data[], const int len );
 
 extern void SSD1306_ClearBuffer();
 extern void SSD1306_96_16_ClearBuffer();

@@ -3,6 +3,101 @@
 #include "timers.h"
 #include "display.h"
 
+/*---------------------------------------------------------------------------------------------------------*/
+/* Global variables  i2c                                                                                      */
+/*---------------------------------------------------------------------------------------------------------*/
+/*
+volatile uint8_t g_u8DeviceAddr;
+volatile uint8_t g_au8TxData[3];
+//volatile uint8_t g_u8RxData;
+volatile uint8_t g_u8DataLen;
+volatile uint8_t g_u8EndFlag = 0;
+typedef void (*I2C_FUNC)(uint32_t u32Status);
+static I2C_FUNC s_I2C0HandlerFn = NULL;
+*/
+
+
+    /*__IO uint32_t CTL;            Offset: 0x00  I2C Control Register                                               */
+    /*__IO uint32_t ADDR0;          Offset: 0x04  I2C Slave Address Register0                                        */
+    /*__IO uint32_t DAT;            Offset: 0x08  I2C Data Register                                                  */
+    /*__I  uint32_t STATUS;         Offset: 0x0C  I2C Status Register                                                */
+    /*__IO uint32_t CLKDIV;         Offset: 0x10  I2C Clock Divided Register                                         */
+    /*__IO uint32_t TOCTL;          Offset: 0x14  I2C Time-out Control Register                                      */
+    /*__IO uint32_t ADDR1;          Offset: 0x18  I2C Slave Address Register1                                        */
+    /*__IO uint32_t ADDR2;          Offset: 0x1C  I2C Slave Address Register2                                        */
+    /*__IO uint32_t ADDR3;          Offset: 0x20  I2C Slave Address Register3                                        */
+    /*__IO uint32_t ADDRMSK0;       Offset: 0x24  I2C Slave Address Mask Register0                                   */
+    /*__IO uint32_t ADDRMSK1;       Offset: 0x28  I2C Slave Address Mask Register1                                   */
+    /*__IO uint32_t ADDRMSK2;       Offset: 0x2C  I2C Slave Address Mask Register2                                   */
+    /*__IO uint32_t ADDRMSK3;       Offset: 0x30  I2C Slave Address Mask Register3                                   */
+    /*__I  uint32_t RESERVE0[2];  */
+    /*__IO uint32_t WKCTL;          Offset: 0x3C  I2C Wake-up Control Register                                       */
+    /*__IO uint32_t WKSTS;          Offset: 0x40  I2C Wake-up Status Register                                        */
+    /*__IO uint32_t BUSCTL;         Offset: 0x44  I2C Bus Management Control Register                                */
+    /*__IO uint32_t BUSTCTL;        Offset: 0x48  I2C Bus Management Timer Control Register                          */
+    /*__IO uint32_t BUSSTS;         Offset: 0x4C  I2C Bus Management Status Register                                 */
+    /*__IO uint32_t PKTSIZE;        Offset: 0x50  I2C Packet Error Checking Byte Number Register                     */
+    /*__I  uint32_t PKTCRC;         Offset: 0x54  I2C Packet Error Checking Byte Value Register                      */
+    /*__IO uint32_t BUSTOUT;        Offset: 0x58  I2C Bus Management Timer Register                                  */
+    /*__IO uint32_t CLKTOUT;        Offset: 0x5C  I2C Bus Management Clock Low Timer Register                        */
+
+/*
+
+__myevic__ void I2C0_IRQHandler(void)
+{
+    uint32_t u32Status;
+
+    u32Status = I2C_GET_STATUS(I2C0);
+    if(I2C_GET_TIMEOUT_FLAG(I2C0))
+    {
+        // Clear I2C0 Timeout Flag
+        I2C_ClearTimeoutFlag(I2C0);
+    }
+    else
+    {
+        if(s_I2C0HandlerFn != NULL)
+            s_I2C0HandlerFn(u32Status);
+    }
+}
+*/
+
+/*---------------------------------------------------------------------------------------------------------*/
+/*  I2C Tx Callback Function                                                                               */
+/*---------------------------------------------------------------------------------------------------------*/
+/*
+__myevic__ void I2C_MasterTx(uint32_t u32Status)
+{
+    if(u32Status == 0x08)                      //START has been transmitted
+    {
+        I2C_SET_DATA(I2C0, g_u8DeviceAddr << 1);    // Write SLA+W to Register I2CDAT
+        I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
+    }
+    else if(u32Status == 0x18)                  // SLA+W has been transmitted and ACK has been received
+    {
+        I2C_SET_DATA(I2C0, g_au8TxData[g_u8DataLen++]);
+        I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
+    }
+    else if(u32Status == 0x20)                  // SLA+W has been transmitted and NACK has been received 
+    {
+        I2C_STOP(I2C0);
+        I2C_START(I2C0);
+    }
+    else if(u32Status == 0x28)                  // DATA has been transmitted and ACK has been received
+    {
+        if(g_u8DataLen != 3)
+        {
+            I2C_SET_DATA(I2C0, g_au8TxData[g_u8DataLen++]);
+            I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
+        }
+        else
+        {
+            I2C_SET_CONTROL_REG(I2C0, I2C_CTL_STO_SI);
+            g_u8EndFlag = 1;
+        }
+    }
+
+}
+*/
 
 //=========================================================================
 //----- (00005714) --------------------------------------------------------
@@ -496,6 +591,53 @@ __myevic__ void SSD1306_WriteBytes( const int isData, const uint8_t data[], cons
 		;
 }
 
+__myevic__ void SSD1306_96_16_WriteBytes( const int isData, const uint8_t data[], const int len )
+{
+    //PERIPH_BASE          (0x40000000UL)  /*!< (Peripheral) Base Address */
+    //APBPERIPH_BASE       (PERIPH_BASE + 0x00040000)
+    //SPI0_BASE            (APBPERIPH_BASE + 0x20000)
+    // SPI0 = SPI0_BASE = 40060000
+    //#define I2C0_BASE            (APBPERIPH_BASE + 0x40000) = 40080000
+    //I2C_WriteByteTwoRegs(I2C0, g_u8DeviceAddr, u16DataAddr,  0xaa) ;
+    
+	//register int is_data = ( isData == 0x40 );
+	//register int byte;
+
+	//PE10 = is_data ? 1 : 0;
+    
+
+        //g_u8DeviceAddr = 0x3C;
+
+	//for ( int i = 0 ; i < len ; ++i )
+	//{
+	//byte = data[i];
+        
+	//g_u8DataLen = 0;
+
+        //MemCpy( g_au8TxData, data, len );
+
+        //g_u8EndFlag = 0;
+        
+        // I2C function to write data to slave
+        //s_I2C0HandlerFn = (I2C_FUNC)I2C_MasterTx;
+
+        // I2C as master sends START signal
+        //I2C_SET_CONTROL_REG(I2C0, I2C_CTL_STA);
+        
+	// Wait I2C Tx Finish 
+        //while(g_u8EndFlag == 0);
+        //g_u8EndFlag = 0;
+        
+        
+
+	//}
+
+      //s_I2C0HandlerFn = NULL;
+
+
+    /* Close I2C0 */
+    //I2C0_Close();      
+}
 
 //=========================================================================
 __myevic__ void SSD1306_Screen2Bitmap( uint8_t *pu8Bitmap )

@@ -38,10 +38,22 @@ __myevic__ void InitSPI0()
 
 __myevic__ void InitI2C()
 {
-        SYS->GPA_MFPL &= ~(SYS_GPA_MFPL_PA2MFP_Msk|SYS_GPA_MFPL_PA3MFP_Msk);
-        SYS->GPA_MFPL |= (SYS_GPA_MFPL_PA2MFP_I2C0_SDA|SYS_GPA_MFPL_PA3MFP_I2C0_SCL); //0x400 0x4000 = 0x4400
+        //SYS->GPA_MFPL &= ~(SYS_GPA_MFPL_PA2MFP_Msk|SYS_GPA_MFPL_PA3MFP_Msk);
+        //SYS->GPA_MFPL |= (SYS_GPA_MFPL_PA2MFP_I2C0_SDA|SYS_GPA_MFPL_PA3MFP_I2C0_SCL); //0x400 0x4000 = 0x4400
  
-	I2C_Open( I2C0, 100000 );
+    /* Open I2C module and set bus clock */
+    //I2C_Open( I2C0, 100000 );
+    
+    /* Set I2C 4 Slave Addresses */
+    //I2C_SetSlaveAddr(I2C0, 0, 0x15, 0);   /* Slave Address : 0x15 */
+    //I2C_SetSlaveAddr(I2C0, 1, 0x35, 0);   /* Slave Address : 0x35 */
+    //I2C_SetSlaveAddr(I2C0, 2, 0x55, 0);   /* Slave Address : 0x55 */
+    //I2C_SetSlaveAddr(I2C0, 3, 0x75, 0);   /* Slave Address : 0x75 */
+
+    /* Enable I2C interrupt */
+    //I2C_EnableInt(I2C0);
+    //NVIC_EnableIRQ(I2C0_IRQn);
+
 }
 
 
@@ -53,14 +65,17 @@ __myevic__ void DisplaySendCommand( const uint8_t cmd )
 
 	switch ( DisplayModel )
 	{
-		case 0:
-                case 3:                    
+		case 0:                    
 			SSD1306_WriteBytes( 0, &DisplayCmdByte, 1 );
 			break;
 			
 		case 1:
 			SSD1327_WriteBytes( 0, &DisplayCmdByte, 1 );
 			break;
+                        
+                case 3:                    
+			SSD1306_96_16_WriteBytes( 0, &DisplayCmdByte, 1 );
+			break;                        
 	}
 }
 
@@ -71,14 +86,17 @@ __myevic__ void DisplaySendData( const uint8_t *data, const uint32_t len )
 {
 	switch ( DisplayModel )
 	{
-		case 0:
-                case 3:   
+		case 0:  
 			SSD1306_WriteBytes( 0x40, data, len );
 			break;
 
 		case 1:
 			SSD1327_WriteBytes( 0x40, data, len );
 			break;
+
+                case 3:   
+			SSD1306_96_16_WriteBytes( 0x40, data, len );
+			break;                        
 	}
 }
 

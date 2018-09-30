@@ -96,7 +96,7 @@ ifneq ($(ARMGCC),)
 	ifdef CC_IS_CLANG
 		CFLAGS += -target armv7em-none-eabi -fshort-enums
 
-		AEABI_COUNT := $(shell arm-none-eabi-nm -g $(ARMGCC)/arm-none-eabi/lib/armv7e-m/libc.a | grep -Ec 'T __aeabi_mem(set|clr)[48]?$$')
+		AEABI_COUNT := $(shell arm-none-eabi-nm -g $(ARMGCC)/arm-none-eabi/lib/thumb/v7e-m/libc.a | grep -Ec 'T __aeabi_mem(set|clr)[48]?$$')
 		ifeq ($(AEABI_COUNT), 0)
 			# __aeabi_memset* and __aeabi_memclr* are not exported by libc
 			# We provide our own implementations

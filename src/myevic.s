@@ -13,7 +13,7 @@
 @ Processor	  : ARM
 @ ARM architecture: ARMv7-M
 @ Target assembler: GNU	assembler
-@ Byte sex	  : Little endian
+@ Byte sex	  : Little endian I2C0_IRQHandler
 
 @ ===========================================================================
 

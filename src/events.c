@@ -318,11 +318,11 @@ __myevic__ void GetUserInput()
                 //! means pressed
 		if ( !PD2 && PE0 && PD3 ) 
                 {
-                    UserInputs = 2;
+                    UserInputs = ISPICO75 ? 3 : 2;
                 }
                 else if ( !PD3 && PE0 && PD2 ) 
                 {
-                    UserInputs = 3;
+                    UserInputs = ISPICO75 ? 2 : 3;
                 }
 		else if ( !PD2 && !PD3 && PE0 ) 
                 {

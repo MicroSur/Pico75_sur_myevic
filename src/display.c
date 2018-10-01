@@ -12,7 +12,7 @@ uint8_t	DisplayCmdByte;
 const image_t **Images;
 
 uint8_t ScreenBuffer[SCREEN_BUFFER_SIZE] __attribute__((aligned(8)));
-uint8_t ScreenBuffer_96_16[0xC0] __attribute__((aligned(8)));
+//uint8_t ScreenBuffer_96_16[SCREEN_BUFFER_SIZE_96_16] __attribute__((aligned(8)));
 
 const uint8_t ByteMaskRight[] = { 0x00, 0x01, 0x03,	0x07, 0x0F, 0x1F, 0x3F,	0x7F };
 const uint8_t ByteMaskLeft[]  = { 0xFF, 0xFE, 0xFC,	0xF8, 0xF0, 0xE0, 0xC0,	0x80 };
@@ -41,18 +41,18 @@ __myevic__ void InitI2C()
         //SYS->GPA_MFPL &= ~(SYS_GPA_MFPL_PA2MFP_Msk|SYS_GPA_MFPL_PA3MFP_Msk);
         //SYS->GPA_MFPL |= (SYS_GPA_MFPL_PA2MFP_I2C0_SDA|SYS_GPA_MFPL_PA3MFP_I2C0_SCL); //0x400 0x4000 = 0x4400
  
-    /* Open I2C module and set bus clock */
-    //I2C_Open( I2C0, 100000 );
+    // Open I2C module and set bus clock
+    I2C_Open( I2C0, 100000 );
     
-    /* Set I2C 4 Slave Addresses */
-    //I2C_SetSlaveAddr(I2C0, 0, 0x15, 0);   /* Slave Address : 0x15 */
-    //I2C_SetSlaveAddr(I2C0, 1, 0x35, 0);   /* Slave Address : 0x35 */
-    //I2C_SetSlaveAddr(I2C0, 2, 0x55, 0);   /* Slave Address : 0x55 */
-    //I2C_SetSlaveAddr(I2C0, 3, 0x75, 0);   /* Slave Address : 0x75 */
+    // Set I2C 4 Slave Addresses
+    I2C_SetSlaveAddr(I2C0, 0, 0x15, 0);   /* Slave Address : 0x15 */
+    I2C_SetSlaveAddr(I2C0, 1, 0x35, 0);   /* Slave Address : 0x35 */
+    I2C_SetSlaveAddr(I2C0, 2, 0x55, 0);   /* Slave Address : 0x55 */
+    I2C_SetSlaveAddr(I2C0, 3, 0x75, 0);   /* Slave Address : 0x75 */
 
-    /* Enable I2C interrupt */
-    //I2C_EnableInt(I2C0);
-    //NVIC_EnableIRQ(I2C0_IRQn);
+    // Enable I2C interrupt
+    I2C_EnableInt(I2C0);
+    NVIC_EnableIRQ(I2C0_IRQn);
 
 }
 

@@ -8,7 +8,7 @@
 //-------------------------------------------------------------------------
 
 #define SCREEN_BUFFER_SIZE 0x400
-#define SCREEN_BUFFER_SIZE_96_16 0xC0
+//#define SCREEN_BUFFER_SIZE_96_16 0xC0
 
 //-------------------------------------------------------------------------
 
@@ -30,7 +30,7 @@ extern const uint8_t ByteMaskLeft[];
 
 extern uint8_t DisplayModel;
 extern uint8_t ScreenBuffer[];
-extern uint8_t ScreenBuffer_96_16[];
+//extern uint8_t ScreenBuffer_96_16[];
 
 extern const image_t **Images;
 

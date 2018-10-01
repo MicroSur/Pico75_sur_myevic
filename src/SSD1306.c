@@ -6,7 +6,6 @@
 /*---------------------------------------------------------------------------------------------------------*/
 /* Global variables  i2c                                                                                      */
 /*---------------------------------------------------------------------------------------------------------*/
-/*
 volatile uint8_t g_u8DeviceAddr;
 volatile uint8_t g_au8TxData[3];
 //volatile uint8_t g_u8RxData;
@@ -14,7 +13,6 @@ volatile uint8_t g_u8DataLen;
 volatile uint8_t g_u8EndFlag = 0;
 typedef void (*I2C_FUNC)(uint32_t u32Status);
 static I2C_FUNC s_I2C0HandlerFn = NULL;
-*/
 
 
     /*__IO uint32_t CTL;            Offset: 0x00  I2C Control Register                                               */
@@ -41,7 +39,6 @@ static I2C_FUNC s_I2C0HandlerFn = NULL;
     /*__IO uint32_t BUSTOUT;        Offset: 0x58  I2C Bus Management Timer Register                                  */
     /*__IO uint32_t CLKTOUT;        Offset: 0x5C  I2C Bus Management Clock Low Timer Register                        */
 
-/*
 
 __myevic__ void I2C0_IRQHandler(void)
 {
@@ -59,12 +56,10 @@ __myevic__ void I2C0_IRQHandler(void)
             s_I2C0HandlerFn(u32Status);
     }
 }
-*/
 
 /*---------------------------------------------------------------------------------------------------------*/
 /*  I2C Tx Callback Function                                                                               */
 /*---------------------------------------------------------------------------------------------------------*/
-/*
 __myevic__ void I2C_MasterTx(uint32_t u32Status)
 {
     if(u32Status == 0x08)                      //START has been transmitted
@@ -97,7 +92,6 @@ __myevic__ void I2C_MasterTx(uint32_t u32Status)
     }
 
 }
-*/
 
 //=========================================================================
 //----- (00005714) --------------------------------------------------------
@@ -122,16 +116,28 @@ __myevic__ void SSD1306_96_16_Refresh()
 {
 	uint8_t *sb;
 
-	sb = ScreenBuffer_96_16;
+	sb = ScreenBuffer;
 
 	for ( int i = 0 ; i < 2 ; ++i )
 	{
 		DisplaySendCommand( 0xB0 + i );
-		DisplaySendCommand( 0 );
-		DisplaySendCommand( ( dfStatus.flipped ) ? 0x12 : 0x10 );
+		//DisplaySendCommand( 0 );
+                if ( dfStatus.flipped )
+                {
+                    DisplaySendCommand( 0x10 );
+                    DisplaySendCommand( 0 );        
+                }
+                else
+                {
+                    DisplaySendCommand( 0x12 );
+                    DisplaySendCommand( 4 ); 
+                }
+		
+                //sb += (i + (i << 1)) << 5 ; // 0, 96
                 
 		DisplaySendData( sb, 96 ); //64 * 16 = 1024 = 64 * 128 / 8 ;bytes
 		sb += 96;
+                
 	}
 }
 
@@ -153,10 +159,10 @@ __myevic__ void SSD1306_ClearBuffer()
 			++v2;
 			*v0++ = 0;
 		}
-		while ( v2 < 0x40 );
+		while ( v2 < 64 );
 		++v1;
 	}
-	while ( v1 < 0x10 );
+	while ( v1 < 16 );
 }
 
 __myevic__ void SSD1306_96_16_ClearBuffer()
@@ -165,7 +171,7 @@ __myevic__ void SSD1306_96_16_ClearBuffer()
 	int v1;
 	int v2;
 
-	v0 = ScreenBuffer_96_16;
+	v0 = ScreenBuffer;
 	v1 = 0;
 	do
 	{
@@ -175,10 +181,10 @@ __myevic__ void SSD1306_96_16_ClearBuffer()
 			++v2;
 			*v0++ = 0;
 		}
-		while ( v2 < 0x60 );
+		while ( v2 < 96 );
 		++v1;
 	}
-	while ( v1 < 0x02 );
+	while ( v1 < 2 );
 }
 
 
@@ -348,11 +354,6 @@ __myevic__ void SSD1306_Plot( int x, int y, int color )
 
 	if (( x < 0 ) || ( x >  63 )) return;
 	if (( y < 0 ) || ( y > 127 )) return;
-        if ( DisplayModel == 3 )
-        {
-            if ( x > 16 ) return;
-            if ( y > 16 ) return; 
-        }
         
 	mask = 1 << ( y & 7 );
 	i = x + ( ( y & ~7 ) << 3 );
@@ -378,7 +379,7 @@ __myevic__ void SSD1306_96_16_Plot( int x, int y, int color )
 	uint8_t mask;
 	uint32_t i;
 
-	if (( x < 0 ) || ( x >  16 )) return; //TODO
+	if (( x < 0 ) || ( x >  96 )) return; //TODO
 	if (( y < 0 ) || ( y > 16 )) return;
         
 	mask = 1 << ( y & 7 );
@@ -386,15 +387,15 @@ __myevic__ void SSD1306_96_16_Plot( int x, int y, int color )
 
 	if ( color == 1 )
 	{
-		ScreenBuffer_96_16[i] |= mask;
+		ScreenBuffer[i] |= mask;
 	}
 	else if ( color == 0 )
 	{
-		ScreenBuffer_96_16[i] &= ~mask;
+		ScreenBuffer[i] &= ~mask;
 	}
 	else
 	{
-		ScreenBuffer_96_16[i] ^= mask;
+		ScreenBuffer[i] ^= mask;
 	}
 }
 
@@ -526,11 +527,11 @@ __myevic__ uint32_t SSD1306_96_16_Bitmap( int x, int y, const image_t *image, in
 
 	bm_ptr = 0;
 
-	lines = image->height >> 3; //  \3 , in bytes
+	lines = image->height >> 3; //  \8 , in bytes
 
 	for ( h = 0 ; h < lines ; ++h )
 	{
-		addr = 16 * ( ( y >> 3 ) + h ) + x;
+		addr = 96 * ( ( y >> 3 ) + h ) + x;
 
 		for ( w = 0 ; w < image->width ; ++w )
 		{
@@ -540,22 +541,22 @@ __myevic__ uint32_t SSD1306_96_16_Bitmap( int x, int y, const image_t *image, in
 
 			if ( shift )
 			{
-				if ( addr < SCREEN_BUFFER_SIZE_96_16 )
+				if ( addr < SCREEN_BUFFER_SIZE )
 				{
-					ScreenBuffer_96_16[ addr ] &= ByteMaskRight[shift];
-					ScreenBuffer_96_16[ addr ] |= ( pixels << shift ) & ByteMaskLeft[shift];
+					ScreenBuffer[ addr ] &= ByteMaskRight[shift];
+					ScreenBuffer[ addr ] |= ( pixels << shift ) & ByteMaskLeft[shift];
 				}
-				if ( addr + 16 < SCREEN_BUFFER_SIZE_96_16 )
+				if ( addr + 96 < SCREEN_BUFFER_SIZE )
 				{
-					ScreenBuffer_96_16[ addr + 16 ] &= ByteMaskLeft[shift];
-					ScreenBuffer_96_16[ addr + 16 ] |= ( pixels >> ( 8 - shift )) & ByteMaskRight[shift];
+					ScreenBuffer[ addr + 96 ] &= ByteMaskLeft[shift];
+					ScreenBuffer[ addr + 96 ] |= ( pixels >> ( 8 - shift )) & ByteMaskRight[shift];
 				}
 			}
 			else
 			{
-				if ( addr < SCREEN_BUFFER_SIZE_96_16 )
+				if ( addr < SCREEN_BUFFER_SIZE )
 				{
-					ScreenBuffer_96_16[ addr ] = pixels;
+					ScreenBuffer[ addr ] = pixels;
 				}
 			}
 
@@ -593,6 +594,13 @@ __myevic__ void SSD1306_WriteBytes( const int isData, const uint8_t data[], cons
 
 __myevic__ void SSD1306_96_16_WriteBytes( const int isData, const uint8_t data[], const int len )
 {
+
+//DisplaySendData
+//ROM:00004DCC                 MOV     R2, R1 // len
+//ROM:00004DCE                 MOV     R1, R0 // data
+//ROM:00004DD0                 MOVS    R0, #0x40 // isData == 0x40
+//ROM:00004DD2                 B.W     lcd_WriteBytes
+    
     //PERIPH_BASE          (0x40000000UL)  /*!< (Peripheral) Base Address */
     //APBPERIPH_BASE       (PERIPH_BASE + 0x00040000)
     //SPI0_BASE            (APBPERIPH_BASE + 0x20000)
@@ -606,17 +614,18 @@ __myevic__ void SSD1306_96_16_WriteBytes( const int isData, const uint8_t data[]
 	//PE10 = is_data ? 1 : 0;
     
 
-        //g_u8DeviceAddr = 0x3C;
-
+        g_u8DeviceAddr = 0x3C;
+             
 	//for ( int i = 0 ; i < len ; ++i )
 	//{
 	//byte = data[i];
         
-	//g_u8DataLen = 0;
+
 
         //MemCpy( g_au8TxData, data, len );
-
-        //g_u8EndFlag = 0;
+        
+	//g_u8DataLen = 0;
+        //g_u8EndFlag = len+1;
         
         // I2C function to write data to slave
         //s_I2C0HandlerFn = (I2C_FUNC)I2C_MasterTx;
@@ -663,7 +672,7 @@ __myevic__ void SSD1306_Screen2Bitmap( uint8_t *pu8Bitmap )
 
 __myevic__ void SSD1306_96_16_Screen2Bitmap( uint8_t *pu8Bitmap )
 {
-	MemClear( pu8Bitmap, 0xC0 );
+	MemClear( pu8Bitmap, SCREEN_BUFFER_SIZE );
 
 	for ( int line = 0 ; line < 2 ; ++line )
 	{
@@ -673,7 +682,7 @@ __myevic__ void SSD1306_96_16_Screen2Bitmap( uint8_t *pu8Bitmap )
 			int mask = 1 << bit;
 			for ( int x = 0 ; x < 96 ; ++x )
 			{
-				if ( ScreenBuffer_96_16[ line * 96 + x ] & mask )
+				if ( ScreenBuffer[ line * 96 + x ] & mask )
 				{
 					pu8Bitmap[ y * 8 + ( x >> 3 ) ] |= ( 16 >> ( x & 7 ) );
 				}

@@ -90,7 +90,7 @@ __myevic__ void DrawMode()
 			case 0:
                         case 1:
                         case 2:
-				DrawString( String_TEMP, 10, 0 );
+				DrawString( String_2, 0, 0 );
 				break;
 			//case 1:
 			//	DrawString( String_TEMP, 10, 0 );
@@ -99,22 +99,23 @@ __myevic__ void DrawMode()
 			//	DrawString( String_TEMP, 10, 0 );
 			//	break;
 			case 3:
-				DrawString( String_TCR, 10, 0 );
+				DrawString( String_3, 0, 0 );
 				break;
 			case 4:
-				DrawStringCentered( String_POWER, 0 );
+				DrawString( String_4, 0, 0);
 				break;
 			case 5:
-				DrawStringCentered( String_BYPASS, 0 );
+				DrawString( String_5, 0, 0 );
 				break;
 			case 6:
-				DrawStringCentered( String_SMART, 0 );
+				DrawString( String_Red, 0, 0 );
 				break;
 			default:
 				break;
 		}
 	}
 
+/*
 	if ( !BLINKITEM(1) )
 	{
 		switch ( dfMode )
@@ -140,6 +141,7 @@ __myevic__ void DrawMode()
 				break;
 		}
 	}
+*/
 }
 
 //=============================================================================
@@ -1120,18 +1122,10 @@ __myevic__ void ShowLogo( int place )
 __myevic__ void ShowMainView()
 {
 	unsigned int pwr, amps;
-	//unsigned int i, j;
-
-	//unsigned int v15; // r0@93
-	//unsigned int v17; // r8@98
-	//unsigned int v19; // r3@99
-	//unsigned int v20; // r1@99
-        
-	//unsigned int sm_p; // r2@168
-	//int sm_dt; // r3@169
         int btv;
         int numb;
 
+/*
 	if ( !gFlags.firing )
 	{
                 if ( SplashTimer )                    
@@ -1140,6 +1134,7 @@ __myevic__ void ShowMainView()
 			return;
 		}
 	}
+*/
 
 	DrawMode();
 
@@ -1186,11 +1181,11 @@ __myevic__ void ShowMainView()
 				pwr = dfTCPower;
 			}
 
-			DrawPower( pwr, 12 );
+//			DrawPower( pwr, 12 );
 		}
 		else
 		{
-			DrawTemp();
+//			DrawTemp();
 		}
                 
 	}
@@ -1202,12 +1197,13 @@ __myevic__ void ShowMainView()
                         pwr = dfSavedCfgPwr[(int)ConfigIndex]; //show fixed power
                 }
                 
-		DrawPower( pwr, 12 );
+//		DrawPower( pwr, 12 );
                 
 	}
 
 ///////////////////////////////////////////////////////////
         
+/*
             static int sx = 0; //pacman line
             //if ( ( gFlags.firing || gFlags.battery_charging ) && HideLogo ) //dfStatus.nologo )
             if ( ( gFlags.firing || gFlags.battery_charging ) 
@@ -1256,8 +1252,7 @@ __myevic__ void ShowMainView()
 		//DrawFillRect( 0, 108, 63, 127, 0 );
 		ShowWeakBat();
 	}
-        //else
-        //{
+
             if ( gFlags.firing || 
                     !( !HideLogo && !dfStatus2.anim3d && dfStatus.clock && dfStatus.digclk == dfStatus2.digclk2 ) )
             { //when not analog clock logo
@@ -1267,7 +1262,8 @@ __myevic__ void ShowMainView()
                     
             }
 
-        //}
+*/
+
 }
 
 

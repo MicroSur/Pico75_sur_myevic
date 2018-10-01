@@ -1099,7 +1099,6 @@ __myevic__ uint32_t hidScreenshot( CMD_T *pCmd )
 	u32StartAddr = pCmd->u32Arg1;
 	u32ParamLen = pCmd->u32Arg2;
 
-	//myprintf( "Screenshot command - Start Addr: %d    Param Len: %d\n", pCmd->u32Arg1, pCmd->u32Arg2 );
 
 	if ( u32ParamLen )
 	{

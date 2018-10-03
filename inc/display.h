@@ -8,7 +8,7 @@
 //-------------------------------------------------------------------------
 
 #define SCREEN_BUFFER_SIZE 0x400
-//#define SCREEN_BUFFER_SIZE_96_16 0xC0
+#define SCREEN_BUFFER_SIZE_96_16 0xC0
 
 //-------------------------------------------------------------------------
 
@@ -30,14 +30,11 @@ extern const uint8_t ByteMaskLeft[];
 
 extern uint8_t DisplayModel;
 extern uint8_t ScreenBuffer[];
-//extern uint8_t ScreenBuffer_96_16[];
+extern uint8_t ScreenBuffer_96_16[];
 
 extern const image_t **Images;
 
 extern const image_t *font0_1306[];
-//extern const image_t *font0_1327[];
-//extern const image_t const *font1_1306[];
-//extern const image_t const *font1_1327[];
 
 //-------------------------------------------------------------------------
 
@@ -52,7 +49,6 @@ extern void DisplaySetInverse( const uint8_t i );
 extern void ClearScreenBuffer();
 extern void DisplayRefresh();
 extern void Screen2Bitmap( uint8_t *pu8Bitmap );
-//extern void DisplaySetFont();
 
 extern int GetImageWidth( const uint8_t imgnum );
 extern int GetStringWidth( const uint8_t str[] );

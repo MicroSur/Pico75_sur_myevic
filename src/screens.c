@@ -1329,11 +1329,18 @@ __myevic__ void ShowScreenSaver()
 
 		case SSAVER_LOGO:
 		{
+                    if ( DisplayModel == 3)
+                    {
+                        DrawLOGO( 0, 0 );
+                    }
+                    else
+                    {
 			int h = GetLogoHeight();
 			if ( h )
 			{
 				DrawLOGO( 0, 32 - ( h - 48 )/2 );
 			}
+                    }
 			break;
 		}
 

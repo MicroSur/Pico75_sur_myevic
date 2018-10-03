@@ -14,10 +14,10 @@ MEMORY {
 
 
 GROUP(
-	C:\GNUToolsARMEmbedded/arm-none-eabi/lib/thumb/v7e-m/libnosys.a
-	C:\GNUToolsARMEmbedded/lib/gcc/arm-none-eabi/6.3.1/thumb/v7e-m/libgcc.a
-	C:\GNUToolsARMEmbedded/arm-none-eabi/lib/thumb/v7e-m/libc.a
-	C:\GNUToolsARMEmbedded/arm-none-eabi/lib/thumb/v7e-m/libm.a
+	thumb/v7e-m/libnosys.a
+	thumb/v7e-m/libgcc.a
+	thumb/v7e-m/libc.a
+	thumb/v7e-m/libm.a
 )
 
 

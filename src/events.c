@@ -317,12 +317,12 @@ __myevic__ void GetUserInput()
 		//if ( !dfStatus.off || IsMenuScreen() )
                 //! means pressed
 		if ( !PD2 && PE0 && PD3 ) 
-                {
-                    UserInputs = ISPICO75 ? 3 : 2;
+                {//ispico?
+                    UserInputs = 2;
                 }
                 else if ( !PD3 && PE0 && PD2 ) 
                 {
-                    UserInputs = ISPICO75 ? 2 : 3;
+                    UserInputs = 3;
                 }
 		else if ( !PD2 && !PD3 && PE0 ) 
                 {
@@ -626,6 +626,10 @@ __myevic__ void GetUserInput()
 			{
 				Event = EVENT_EXIT_MENUS;
 			}
+			else if ( !dfStatus.off )
+			{
+				Event = EVENT_ENTER_MENUS;  
+                        }
                 }
                 else if ( UserInputs == 7 ) //all 3 buttons
                 {

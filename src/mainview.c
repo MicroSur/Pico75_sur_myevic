@@ -90,7 +90,7 @@ __myevic__ void DrawMode()
 			case 0:
                         case 1:
                         case 2:
-				DrawString( String_2, 0, 0 );
+				DrawString( String_TEMP, 10, 0 );
 				break;
 			//case 1:
 			//	DrawString( String_TEMP, 10, 0 );
@@ -99,23 +99,22 @@ __myevic__ void DrawMode()
 			//	DrawString( String_TEMP, 10, 0 );
 			//	break;
 			case 3:
-				DrawString( String_3, 0, 0 );
+				DrawString( String_TCR, 10, 0 );
 				break;
 			case 4:
-				DrawString( String_4, 0, 0);
+                                DrawStringCentered( String_POWER, 0 );
 				break;
 			case 5:
-				DrawString( String_5, 0, 0 );
+				DrawStringCentered( String_BYPASS, 0 );
 				break;
 			case 6:
-				DrawString( String_Red, 0, 0 );
+				DrawStringCentered( String_SMART, 0 );
 				break;
 			default:
 				break;
 		}
 	}
 
-/*
 	if ( !BLINKITEM(1) )
 	{
 		switch ( dfMode )
@@ -141,7 +140,6 @@ __myevic__ void DrawMode()
 				break;
 		}
 	}
-*/
 }
 
 //=============================================================================
@@ -1125,7 +1123,6 @@ __myevic__ void ShowMainView()
         int btv;
         int numb;
 
-/*
 	if ( !gFlags.firing )
 	{
                 if ( SplashTimer )                    
@@ -1134,7 +1131,6 @@ __myevic__ void ShowMainView()
 			return;
 		}
 	}
-*/
 
 	DrawMode();
 
@@ -1181,11 +1177,11 @@ __myevic__ void ShowMainView()
 				pwr = dfTCPower;
 			}
 
-//			DrawPower( pwr, 12 );
+			DrawPower( pwr, 12 );
 		}
 		else
 		{
-//			DrawTemp();
+			DrawTemp();
 		}
                 
 	}
@@ -1197,13 +1193,12 @@ __myevic__ void ShowMainView()
                         pwr = dfSavedCfgPwr[(int)ConfigIndex]; //show fixed power
                 }
                 
-//		DrawPower( pwr, 12 );
+		DrawPower( pwr, 12 );
                 
 	}
 
 ///////////////////////////////////////////////////////////
         
-/*
             static int sx = 0; //pacman line
             //if ( ( gFlags.firing || gFlags.battery_charging ) && HideLogo ) //dfStatus.nologo )
             if ( ( gFlags.firing || gFlags.battery_charging ) 
@@ -1262,7 +1257,6 @@ __myevic__ void ShowMainView()
                     
             }
 
-*/
 
 }
 

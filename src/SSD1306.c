@@ -3,17 +3,6 @@
 #include "timers.h"
 #include "display.h"
 
-/*---------------------------------------------------------------------------------------------------------*/
-/* Global variables  i2c                                                                                      */
-/*---------------------------------------------------------------------------------------------------------*/
-volatile uint8_t g_u8DeviceAddr;
-volatile uint8_t g_au8TxData[3];
-//volatile uint8_t g_u8RxData;
-volatile uint8_t g_u8DataLen;
-volatile uint8_t g_u8EndFlag = 0;
-typedef void (*I2C_FUNC)(uint32_t u32Status);
-static I2C_FUNC s_I2C0HandlerFn = NULL;
-
 
     /*__IO uint32_t CTL;            Offset: 0x00  I2C Control Register                                               */
     /*__IO uint32_t ADDR0;          Offset: 0x04  I2C Slave Address Register0                                        */
@@ -40,59 +29,6 @@ static I2C_FUNC s_I2C0HandlerFn = NULL;
     /*__IO uint32_t CLKTOUT;        Offset: 0x5C  I2C Bus Management Clock Low Timer Register                        */
 
 
-__myevic__ void I2C0_IRQHandler(void)
-{
-    uint32_t u32Status;
-
-    u32Status = I2C_GET_STATUS(I2C0);
-    if(I2C_GET_TIMEOUT_FLAG(I2C0))
-    {
-        // Clear I2C0 Timeout Flag
-        I2C_ClearTimeoutFlag(I2C0);
-    }
-    else
-    {
-        if(s_I2C0HandlerFn != NULL)
-            s_I2C0HandlerFn(u32Status);
-    }
-}
-
-/*---------------------------------------------------------------------------------------------------------*/
-/*  I2C Tx Callback Function                                                                               */
-/*---------------------------------------------------------------------------------------------------------*/
-__myevic__ void I2C_MasterTx(uint32_t u32Status)
-{
-    if(u32Status == 0x08)                      //START has been transmitted
-    {
-        I2C_SET_DATA(I2C0, g_u8DeviceAddr << 1);    // Write SLA+W to Register I2CDAT
-        I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
-    }
-    else if(u32Status == 0x18)                  // SLA+W has been transmitted and ACK has been received
-    {
-        I2C_SET_DATA(I2C0, g_au8TxData[g_u8DataLen++]);
-        I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
-    }
-    else if(u32Status == 0x20)                  // SLA+W has been transmitted and NACK has been received 
-    {
-        I2C_STOP(I2C0);
-        I2C_START(I2C0);
-    }
-    else if(u32Status == 0x28)                  // DATA has been transmitted and ACK has been received
-    {
-        if(g_u8DataLen != 3)
-        {
-            I2C_SET_DATA(I2C0, g_au8TxData[g_u8DataLen++]);
-            I2C_SET_CONTROL_REG(I2C0, I2C_CTL_SI);
-        }
-        else
-        {
-            I2C_SET_CONTROL_REG(I2C0, I2C_CTL_STO_SI);
-            g_u8EndFlag = 1;
-        }
-    }
-
-}
-
 //=========================================================================
 //----- (00005714) --------------------------------------------------------
 __myevic__ void SSD1306_Refresh()
@@ -116,7 +52,20 @@ __myevic__ void SSD1306_96_16_Refresh()
 {
 	uint8_t *sb;
 
-	sb = ScreenBuffer;
+	sb = ScreenBuffer_96_16;
+
+/*
+        for ( int i = 0 ; i < 2 ; ++i )
+	{
+		DisplaySendCommand( 0xB0 + i );
+		DisplaySendCommand( 0 );
+		DisplaySendCommand( ( dfStatus.flipped ) ? 0x12 : 0x10 );
+                
+		DisplaySendData( sb, 96 ); //64 * 16 = 1024 = 64 * 128 / 8 ;bytes
+		sb += 96;
+	}
+*/
+        
 
 	for ( int i = 0 ; i < 2 ; ++i )
 	{
@@ -125,12 +74,12 @@ __myevic__ void SSD1306_96_16_Refresh()
                 if ( dfStatus.flipped )
                 {
                     DisplaySendCommand( 0x10 );
-                    DisplaySendCommand( 0 );        
+                    //DisplaySendCommand( 0 );        
                 }
                 else
                 {
                     DisplaySendCommand( 0x12 );
-                    DisplaySendCommand( 4 ); 
+                    //DisplaySendCommand( 4 ); 
                 }
 		
                 //sb += (i + (i << 1)) << 5 ; // 0, 96
@@ -139,6 +88,7 @@ __myevic__ void SSD1306_96_16_Refresh()
 		sb += 96;
                 
 	}
+
 }
 
 //=========================================================================
@@ -171,7 +121,7 @@ __myevic__ void SSD1306_96_16_ClearBuffer()
 	int v1;
 	int v2;
 
-	v0 = ScreenBuffer;
+	v0 = ScreenBuffer_96_16;
 	v1 = 0;
 	do
 	{
@@ -215,6 +165,22 @@ __myevic__ void SSD1306_PowerOn()
 	WaitOnTMR2( 10 );
 }
 
+__myevic__ void SSD1306_96_16_PowerOn()
+{
+    	//PA0 = 1;
+        //WaitOnTMR2( 1 );
+    
+	PA1 = 1;
+        WaitOnTMR2( 1 );
+	PA0 = 0;
+	WaitOnTMR2( 1 );  
+	PA0 = 1;
+	WaitOnTMR2( 1 );        
+	PC4 = 1;
+	WaitOnTMR2( 40 );
+
+
+}
 
 //=========================================================================
 
@@ -285,22 +251,48 @@ const uint8_t SSD1306_96_16_InitSeq[] =
                 0xDA,
                 0x02,
 		0x81, // Set Contrast (0~255) ...
-		0x2F, // ... to 
+		0x56, // ... to 
                 0xD9, //Set Pre-charge Period
                 0xF1,
 		0xDB, // Set VCOMH Deselect Level, adjusts the VCOMH regulator output, SETVCOMDETECT
 	        0x20, // 00h 20h_def 30h // 00 - darker but artefacts when lighter
-		//0xA4, //def //Entire Display ON, DISPLAYALLON_RESUME,  Output follows RAM content 
+		0xA4, //def //Entire Display ON, DISPLAYALLON_RESUME,  Output follows RAM content 
+		0xA6, //Set Normal/Inverse Display (A6h/A7h)
+        };
+
+const uint8_t SSD1306_96_16_InitSeq_2[] =
+	{	0xAE, //Set Display ON/OFF (AFh/AEh)
+                0xD5, //Set Display Clock Divide Ratio/Oscillator Frequency, SETDISPLAYCLOCKDIV
+                0x52, // ... to
+		0xA8, //Set Multiplex Ratio...
+		0x0F, //...to 63 (all scr visible)
+		0xD3, // Set Display Offset ...
+		0x00, // ... to		
+		0x40,
+                0xAD,
+                0x8A,
+                0xA0,
+                0xC0,
+                0xDA,
+                0x02,
+		0x81, // Set Contrast (0~255) ...
+		0x56, // ... to 
+                0xD9, //Set Pre-charge Period
+                0x22,
+		0xDB, // Set VCOMH Deselect Level, adjusts the VCOMH regulator output, SETVCOMDETECT
+	        0x40, // 00h 20h_def 30h // 00 - darker but artefacts when lighter
+		0xA4, //def //Entire Display ON, DISPLAYALLON_RESUME,  Output follows RAM content 
 		0xA6, //Set Normal/Inverse Display (A6h/A7h)
         };
 
 __myevic__ void SSD1306_96_16_Init()
 {
-	SSD1306_PowerOn();
+	//SSD1306_96_16_PowerOn();
+        SSD1306_PowerOn();
 
 	for ( int i = 0 ; i < sizeof( SSD1306_96_16_InitSeq ) ; ++i )
 	{
-		DisplaySendCommand( SSD1306_96_16_InitSeq[i] );
+		DisplaySendCommand( SSD1306_96_16_InitSeq_2[i] );
 	}
 
 	if ( dfStatus.flipped )
@@ -379,23 +371,23 @@ __myevic__ void SSD1306_96_16_Plot( int x, int y, int color )
 	uint8_t mask;
 	uint32_t i;
 
-	if (( x < 0 ) || ( x >  96 )) return; //TODO
-	if (( y < 0 ) || ( y > 16 )) return;
+	if (( x < 0 ) || ( x > 95 )) return;
+	if (( y < 0 ) || ( y > 15 )) return;
         
 	mask = 1 << ( y & 7 );
-	i = x + ( ( y & ~7 ) << 3 );
+        i =  x + ( ( ( y >> 3 ) + ( ( y >> 3 ) << 1 ) ) << 5 );
 
 	if ( color == 1 )
 	{
-		ScreenBuffer[i] |= mask;
+		ScreenBuffer_96_16[i] |= mask;
 	}
 	else if ( color == 0 )
 	{
-		ScreenBuffer[i] &= ~mask;
+		ScreenBuffer_96_16[i] &= ~mask;
 	}
 	else
 	{
-		ScreenBuffer[i] ^= mask;
+		ScreenBuffer_96_16[i] ^= mask;
 	}
 }
 
@@ -523,6 +515,7 @@ __myevic__ uint32_t SSD1306_96_16_Bitmap( int x, int y, const image_t *image, in
         //const uint8_t ByteMaskRight[] = { 0x00, 0x01, 0x03,	0x07, 0x0F, 0x1F, 0x3F,	0x7F };
         //const uint8_t ByteMaskLeft[]  = { 0xFF, 0xFE, 0xFC,	0xF8, 0xF0, 0xE0, 0xC0,	0x80 };
         //#define SCREEN_BUFFER_SIZE 0x400
+        
 	shift = y & 7; // 0...7
 
 	bm_ptr = 0;
@@ -541,22 +534,22 @@ __myevic__ uint32_t SSD1306_96_16_Bitmap( int x, int y, const image_t *image, in
 
 			if ( shift )
 			{
-				if ( addr < SCREEN_BUFFER_SIZE )
+				if ( addr < SCREEN_BUFFER_SIZE_96_16 )
 				{
-					ScreenBuffer[ addr ] &= ByteMaskRight[shift];
-					ScreenBuffer[ addr ] |= ( pixels << shift ) & ByteMaskLeft[shift];
+					ScreenBuffer_96_16[ addr ] &= ByteMaskRight[shift];
+					ScreenBuffer_96_16[ addr ] |= ( pixels << shift ) & ByteMaskLeft[shift];
 				}
-				if ( addr + 96 < SCREEN_BUFFER_SIZE )
+				if ( addr + 96 < SCREEN_BUFFER_SIZE_96_16 )
 				{
-					ScreenBuffer[ addr + 96 ] &= ByteMaskLeft[shift];
-					ScreenBuffer[ addr + 96 ] |= ( pixels >> ( 8 - shift )) & ByteMaskRight[shift];
+					ScreenBuffer_96_16[ addr + 96 ] &= ByteMaskLeft[shift];
+					ScreenBuffer_96_16[ addr + 96 ] |= ( pixels >> ( 8 - shift )) & ByteMaskRight[shift];
 				}
 			}
 			else
 			{
-				if ( addr < SCREEN_BUFFER_SIZE )
+				if ( addr < SCREEN_BUFFER_SIZE_96_16 )
 				{
-					ScreenBuffer[ addr ] = pixels;
+					ScreenBuffer_96_16[ addr ] = pixels;
 				}
 			}
 
@@ -592,62 +585,6 @@ __myevic__ void SSD1306_WriteBytes( const int isData, const uint8_t data[], cons
 		;
 }
 
-__myevic__ void SSD1306_96_16_WriteBytes( const int isData, const uint8_t data[], const int len )
-{
-
-//DisplaySendData
-//ROM:00004DCC                 MOV     R2, R1 // len
-//ROM:00004DCE                 MOV     R1, R0 // data
-//ROM:00004DD0                 MOVS    R0, #0x40 // isData == 0x40
-//ROM:00004DD2                 B.W     lcd_WriteBytes
-    
-    //PERIPH_BASE          (0x40000000UL)  /*!< (Peripheral) Base Address */
-    //APBPERIPH_BASE       (PERIPH_BASE + 0x00040000)
-    //SPI0_BASE            (APBPERIPH_BASE + 0x20000)
-    // SPI0 = SPI0_BASE = 40060000
-    //#define I2C0_BASE            (APBPERIPH_BASE + 0x40000) = 40080000
-    //I2C_WriteByteTwoRegs(I2C0, g_u8DeviceAddr, u16DataAddr,  0xaa) ;
-    
-	//register int is_data = ( isData == 0x40 );
-	//register int byte;
-
-	//PE10 = is_data ? 1 : 0;
-    
-
-        g_u8DeviceAddr = 0x3C;
-             
-	//for ( int i = 0 ; i < len ; ++i )
-	//{
-	//byte = data[i];
-        
-
-
-        //MemCpy( g_au8TxData, data, len );
-        
-	//g_u8DataLen = 0;
-        //g_u8EndFlag = len+1;
-        
-        // I2C function to write data to slave
-        //s_I2C0HandlerFn = (I2C_FUNC)I2C_MasterTx;
-
-        // I2C as master sends START signal
-        //I2C_SET_CONTROL_REG(I2C0, I2C_CTL_STA);
-        
-	// Wait I2C Tx Finish 
-        //while(g_u8EndFlag == 0);
-        //g_u8EndFlag = 0;
-        
-        
-
-	//}
-
-      //s_I2C0HandlerFn = NULL;
-
-
-    /* Close I2C0 */
-    //I2C0_Close();      
-}
-
 //=========================================================================
 __myevic__ void SSD1306_Screen2Bitmap( uint8_t *pu8Bitmap )
 {
@@ -672,7 +609,7 @@ __myevic__ void SSD1306_Screen2Bitmap( uint8_t *pu8Bitmap )
 
 __myevic__ void SSD1306_96_16_Screen2Bitmap( uint8_t *pu8Bitmap )
 {
-	MemClear( pu8Bitmap, SCREEN_BUFFER_SIZE );
+	MemClear( pu8Bitmap, SCREEN_BUFFER_SIZE_96_16 );
 
 	for ( int line = 0 ; line < 2 ; ++line )
 	{
@@ -682,7 +619,7 @@ __myevic__ void SSD1306_96_16_Screen2Bitmap( uint8_t *pu8Bitmap )
 			int mask = 1 << bit;
 			for ( int x = 0 ; x < 96 ; ++x )
 			{
-				if ( ScreenBuffer[ line * 96 + x ] & mask )
+				if ( ScreenBuffer_96_16[ line * 96 + x ] & mask )
 				{
 					pu8Bitmap[ y * 8 + ( x >> 3 ) ] |= ( 16 >> ( x & 7 ) );
 				}

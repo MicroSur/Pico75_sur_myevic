@@ -1026,9 +1026,8 @@ __myevic__ void Main()
 {
     //Init
     
-	InitDevices();
+	InitDevices(); //CLK_EnableModuleClock(I2C0_MODULE);
 	InitDataFlash();
-	//LEDGetColor();
 	InitVariables();
 
 	// Enable chip temp sensor sampling by ADC

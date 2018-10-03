@@ -911,8 +911,17 @@ __myevic__ void rotate_object( pt3d_t *dst, const obj3d_t *src, const matrix3d_t
 
         if ( Screen == 60 )
         {
+            if ( DisplayModel == 3 )
+            {
+                s = src->scale / 2;
+            }
+            else
+            {
             s = 3 * src->scale / 2;
-        } else {
+            }
+        } 
+        else 
+        {
             s = src->scale;
         }
         
@@ -982,8 +991,16 @@ __myevic__ void anim3d() //( int redraw_last )
 
         if ( Screen == 60 )
         {
+            if ( DisplayModel == 3 )
+            {
+            cY = 8;                
+            }
+            else
+            {
             cY = 64;
             thk = 2;
+            }
+            
             ClearScreenBuffer(); //DrawFillRect( 0, 0, 63, 127, 0 );
         } 
         else
@@ -1000,9 +1017,9 @@ __myevic__ void anim3d() //( int redraw_last )
 	for ( int i = 0 ; i < object->nlines ; ++i )
 	{
 		DrawLine(
-			points[object->lines[i].pt1].x + 32,
+			points[object->lines[i].pt1].x + 48,
 			points[object->lines[i].pt1].y + cY,
-			points[object->lines[i].pt2].x + 32,
+			points[object->lines[i].pt2].x + 48,
 			points[object->lines[i].pt2].y + cY,
 			1,
 			thk
@@ -1038,10 +1055,10 @@ __myevic__ void SetRandSeed( uint32_t s )
 // derived from bounce.c Copyright (c) 1987 Bellcore
 //
 
-#define QIX_MAXX    63
-#define QIX_MAXY    127
+#define QIX_MAXX    95 //63
+#define QIX_MAXY    15 //127
 #define QIX_MINV    2
-#define QIX_MAXV    10
+#define QIX_MAXV    5
 #define QIX_LCT     12
 
 typedef struct {
@@ -1147,9 +1164,9 @@ __myevic__ void Snow() // int redraw
 	if ( ++tscaler < 2 ) return;
 	tscaler = 0;
 
-	for ( int i = 0; i < SCREEN_BUFFER_SIZE ; ++i )
+	for ( int i = 0; i < SCREEN_BUFFER_SIZE_96_16 ; ++i )
 	{
-		ScreenBuffer[i] = Random() % 0xFF;
+		ScreenBuffer_96_16[i] = Random() % 0xFF;
 	}
 	//if ( !redraw )
 	//{
@@ -1166,7 +1183,7 @@ __myevic__ void StarField()
     //Daniel Shiffman 
     //https://github.com/CodingTrain/website/tree/master/CodingChallenges/CC_01_StarField_p5.js
     
-    static stars_t stars[50];
+    static stars_t stars[35];
     int sx, sy, r;
 
     static int tscaler = 0;
@@ -1177,20 +1194,20 @@ __myevic__ void StarField()
     
     ClearScreenBuffer();
     
-    for ( int i = 0; i < 50; i++ ) 
+    for ( int i = 0; i < 35; i++ ) 
     {            
         stars[i].z -= 1;
         
         if ( stars[i].z < 1 ) 
         {
-            stars[i].z = Random() % 32 + 32;
-            stars[i].x = Random() % 64 - 32;
-            stars[i].y = Random() % 128 - 64;
+            stars[i].z = Random() % 48 + 48;
+            stars[i].x = Random() % 96 - 48;
+            stars[i].y = Random() % 16 - 8;
         }
     
-        sx = map( (stars[i].x * 16) / stars[i].z, -32, 32, 0, 63 );
-        sy = map( (stars[i].y * 16) / stars[i].z, -64, 64, 0, 127 );
-        r = map( stars[i].z, 32, 0, 0, 6 );
+        sx = map( (stars[i].x * 8) / stars[i].z, -48, 48, 0, 95 );
+        sy = map( (stars[i].y * 8) / stars[i].z, -8, 8, 0, 15 );
+        r = map( stars[i].z, 32, 0, 0, 5 );
     
         // DrawCircle( int x_centre, int y_centre, int r, int color, int fill )
         DrawCircle( sx, sy, r, 1, !r );

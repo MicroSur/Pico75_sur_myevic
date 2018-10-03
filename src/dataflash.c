@@ -275,6 +275,7 @@ __myevic__ void SetProductID()
 			BoxModel = BOX_PICO75;
 			X32Off = 1;
                         BoxName = "Pico75";
+                        ScrFlip = 0;
 			break;
 		}
 		else if ( u32Data == PID_VTCMINI )
@@ -815,13 +816,13 @@ __myevic__ void ResetDataFlash()
 	dfStatus.flipped = ScrFlip;
 //      dfStatus.fireflip = 0;
 //      dfStatus.vvlite = 0;        //VVolt
-	dfStatus.nologo = 1;
+	dfStatus.nologo = 0;
         dfAutoPuffTimer = 20;
 	dfStatus.x32off = X32Off;
 	dfStatus.onewatt = 1;
 	dfStatus.digclk = 1;
 //      dfStatus2.digclk2 = 0;      //00 01 10
-        dfStatus2.splash1 = 1;      //splash on with box name
+        dfStatus2.splash1 = 0;      //splash on with box name = 1
 //	dfStatus.battpc = 1;
 //        dfBattLine = 1;
 	dfStatus.wakeonpm = 1;
@@ -851,7 +852,7 @@ __myevic__ void ResetDataFlash()
 	dfPreheatTime = 10;
 	dfClick[0] = CLICK_ACTION_EDIT;
 	dfClick[1] = CLICK_ACTION_ON_OFF;
-	dfClick[2] = CLICK_ACTION_TETRIS;
+	dfClick[2] = CLICK_ACTION_MENU;
         dfClick[3] = CLICK_ACTION_ON_OFF;
 //	dfBatteryModel = 0;
 //	dfTCAlgo = TCALGO_DEF; // =0 

@@ -608,20 +608,21 @@ __myevic__ void SSD1306_Screen2Bitmap( uint8_t *pu8Bitmap )
 }
 
 __myevic__ void SSD1306_96_16_Screen2Bitmap( uint8_t *pu8Bitmap )
-{
-	MemClear( pu8Bitmap, SCREEN_BUFFER_SIZE_96_16 );
+{    
+    MemClear( pu8Bitmap, SCREEN_BUFFER_SIZE );
 
 	for ( int line = 0 ; line < 2 ; ++line )
 	{
 		for ( int bit = 0 ; bit < 8 ; ++bit )
 		{
-			int y = line * 8 + bit;
+			int y = ( line * 8 + bit ) * 12;
 			int mask = 1 << bit;
+                        
 			for ( int x = 0 ; x < 96 ; ++x )
 			{
 				if ( ScreenBuffer_96_16[ line * 96 + x ] & mask )
 				{
-					pu8Bitmap[ y * 8 + ( x >> 3 ) ] |= ( 16 >> ( x & 7 ) );
+					pu8Bitmap[ y + ( x >> 3 ) ] |= ( 128 >> ( x & 7 ) );
 				}
 			}
 		}

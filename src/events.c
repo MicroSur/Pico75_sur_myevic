@@ -218,15 +218,7 @@ __myevic__ void SetClicksAction( uint8_t num )
                                                         //sur do not like EVENT_NEXT_PROFILE;
 							FireClicksEvent = EVENT_PROFILE_MENU;
 							break;
-                                                        
-                                                case CLICK_ACTION_TETRIS:
-							FireClicksEvent = EVENT_TETRIS; // tetris
-							break;
-                                                        
-                                                case CLICK_ACTION_GAME:
-							FireClicksEvent = 41;	// flappy
-							break;
-                                                        
+                                                                                                                
                                                 case CLICK_ACTION_SAVER:
 							FireClicksEvent = EVENT_SAVER;
 							break;       
@@ -287,6 +279,7 @@ __myevic__ void GetUserInput()
 		{
 			if ( LastInputs == 1 )
 			{
+/*
                                 if ( gFlags.apuff ) // 1 //for correct last FireDuration in TC
                                 {
                                     //gFlags.apuff = 0; //in StopFire(); 
@@ -297,6 +290,7 @@ __myevic__ void GetUserInput()
                                         DisplayRefresh();   
                                     }
                                 }
+*/
                                                             
 				StopFire();          //2                  
                                 //gFlags.refresh_display = 1; //bad idea // for correct last FireDuration in TC
@@ -317,12 +311,12 @@ __myevic__ void GetUserInput()
 		//if ( !dfStatus.off || IsMenuScreen() )
                 //! means pressed
 		if ( !PD2 && PE0 && PD3 ) 
-                {//ispico?
-                    UserInputs = 2;
+                {
+                    UserInputs = ( ISPICO75 ) ? 3 : 2;
                 }
                 else if ( !PD3 && PE0 && PD2 ) 
                 {
-                    UserInputs = 3;
+                    UserInputs = ( ISPICO75 ) ? 2 : 3;
                 }
 		else if ( !PD2 && !PD3 && PE0 ) 
                 {
@@ -330,11 +324,11 @@ __myevic__ void GetUserInput()
                 }
 		else if ( !PE0 && !PD2 && PD3 ) 
                 {
-                    UserInputs = 5;
+                    UserInputs = ( ISPICO75 ) ? 6 : 5;
                 }
 		else if ( !PE0 && !PD3 && PD2 ) 
                 {
-                    UserInputs = 6;
+                    UserInputs = ( ISPICO75 ) ? 5 : 6;
                 }
                 else if ( !PE0 && !PD3 && !PD2 )
                 {

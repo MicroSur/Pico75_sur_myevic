@@ -275,7 +275,7 @@ __myevic__ void SetProductID()
 			BoxModel = BOX_PICO75;
 			X32Off = 1;
                         BoxName = "Pico75";
-                        ScrFlip = 0;
+                        //ScrFlip = 1;
 			break;
 		}
 		else if ( u32Data == PID_VTCMINI )

@@ -782,6 +782,7 @@ __myevic__ void ClicksMenuIDraw( int it, int line, int sel )
 			DrawString( String_Profile, 26, line+2 );
 			break;
 
+/*
 		case CLICK_ACTION_GAME:
 			DrawString( String_Game, 26, line+2 );
 			break;
@@ -789,6 +790,7 @@ __myevic__ void ClicksMenuIDraw( int it, int line, int sel )
 		case CLICK_ACTION_TETRIS:
 			DrawString( String_Tetris, 26, line+2 );
 			break;
+*/
                         
 		case CLICK_ACTION_SAVER:
 			DrawString( String_Saver, 26, line+2 );
@@ -3017,7 +3019,7 @@ __myevic__ void MiscMenuOnClick()
 {
     	switch ( CurrentMenuItem )
 	{
-            case 6:
+            case 4:
                 ResetAllCounters();
                 break;
         }
@@ -3028,7 +3030,7 @@ __myevic__ int MiscMenuOnEvent( int event )
 {
 	int vret = 0;
                             
-	if ( CurrentMenuItem != 8 )
+	if ( CurrentMenuItem != 6 )
 		return vret;  //no capture others events
 
 	switch ( event )
@@ -3176,6 +3178,7 @@ __myevic__ int CurveMenuOnEvent( int event )
 }
 
 
+/*
 const menu_t GameMenu =
 {
 	String_Game,
@@ -3193,6 +3196,8 @@ const menu_t GameMenu =
 		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
+*/
+/*
 const menu_t GameTtMenu =
 {
 	String_Tetris,
@@ -3210,6 +3215,7 @@ const menu_t GameTtMenu =
 		{ String_Back, 0, EVENT_PARENT_MENU, 0 }
 	}
 };
+*/
 const menu_t ModesMenu =
 {
 	String_Modes,
@@ -3569,13 +3575,11 @@ const menu_t MiscsMenu =
 	0,
 	MiscMenuOnClick+1,
 	MiscMenuOnEvent+1,
-	10,
+	8,
 	{
-		{ String_Game, &GameMenu, 0, MACTION_SUBMENU },
-                { String_Tetris, &GameTtMenu, 0, MACTION_SUBMENU },                        
-		{ String_Led, &LedMenu, 0, MACTION_SUBMENU },
-		//{ String_3D, &Object3DMenu, 0, MACTION_SUBMENU },
-                //{ String_FiFlip, &FireFlip, 0, MACTION_DATA },     
+		//{ String_Game, &GameMenu, 0, MACTION_SUBMENU },
+                //{ String_Tetris, &GameTtMenu, 0, MACTION_SUBMENU },                        
+		{ String_Led, &LedMenu, 0, MACTION_SUBMENU },    
                 { String_SwapMP, &SwapMP, 0, MACTION_DATA },  
                 { String_NewZC, &NBZC, 0, MACTION_DATA },
                 { String_Puff24, &Puff24, 0, MACTION_DATA },        
@@ -4485,11 +4489,17 @@ __myevic__ void DrawMenu()
 		return;
 	}
 
+/*
 	if ( CurrentMenuItem >= CurrentMenu->nitems ) CurrentMenuItem = 0;
 
+        if ( CurrentMenuItem != 0 )
+        {
 	DrawString( CurrentMenu->caption, 4, 3 ); //4 5
 	DrawHLine( 0, 14, 63, 1 ); //0 16
+        }
+*/
 
+/*
 	if (( CurrentMenu->nitems > 8 ) && ( CurrentMenuItem > 3 ))
 	{
 		if ( CurrentMenuItem > CurrentMenu->nitems-4 )
@@ -4505,17 +4515,20 @@ __myevic__ void DrawMenu()
 	{
 		firstitem = 0;
 	}
-
+*/
+        firstitem = CurrentMenuItem;
+        
 	for ( int i = 0; i < 8; ++i )
 	{
 		if ( firstitem + i >= CurrentMenu->nitems ) break;
 
 		mitem_t const *mi = &CurrentMenu->mitems[firstitem+i];
 
-		int line = 16 + 14 * i; //18 + 14 * i;
+		int line = 14 * i; //16 + 14 * i;
 
 		if ( mi->caption )
 		{
+/*
 			if ( CurrentMenuItem == firstitem + i )
 			{
 				DrawFillRect( 0, line, 63, line + 12, 1 );
@@ -4525,10 +4538,11 @@ __myevic__ void DrawMenu()
 			}
 			else
 			{
+*/
 				DrawString( mi->caption, 2, line + 2 );
                                 if ( mi->action_type == MACTION_SUBMENU )
                                     DrawImage( 58, line+2, 0xD4 );
-			}
+		//	}
 		}
 
 		if ( mi->action_type == MACTION_DATA )
@@ -4791,13 +4805,11 @@ __myevic__ int MenuEvent( int event )
 		}
 	}
 
-/*
-	if ( ISEGRIPII ) // or gFlags.swap_keys
+	if ( ISEGRIPII || ISPICO75 ) // or gFlags.swap_keys
 	{
 		if ( event == 2 ) event = 3;
 		else if ( event == 3 ) event = 2;
 	}
-*/
 
 	switch ( event )
 	{

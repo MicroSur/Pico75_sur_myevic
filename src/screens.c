@@ -966,9 +966,10 @@ __myevic__ void ShowBattVolts()
 {
     //Event = 34;
     //SetScreen( 54
-    int x, y, r;
-    const BatV2P_t *v2p = Battery->V2P;
+    //int x, y, r;
+    //const BatV2P_t *v2p = Battery->V2P;
     
+/*
     DrawStringCentered( NumBatteries > 1? String_Batteries : String_Battery, 0 );
     
     //DrawVLineDots( const int x, const int y1, const int y2, const int color )
@@ -987,12 +988,15 @@ __myevic__ void ShowBattVolts()
     //DrawCircle( int x_centre, int y_centre, int r, int color, int fill )
     DrawCircle( x, y, r, 1, 1 );
     }
+*/
 
+/*
     for ( int i = 0 ; i < NumBatteries ; ++i )
     {
-        DrawValue(  8, 49+21*i, BattVolts[i], 2, 0x29, 3 );
-        DrawImage( 50, 57+21*i, 0xB1 );
-    }
+*/
+        DrawValue(  8, 0, BattVolts[0], 2, 0x29, 3 );
+        DrawImage( 50, 8, 0xB1 );
+
 }
 
 
@@ -1543,18 +1547,15 @@ __myevic__ void ShowImbBatts()
 //=========================================================================
 __myevic__ void ShowPowerCurve()
 {
-    	//DrawHLine( 6,  19,  58, 1 );
-	//DrawHLine( 6, 119,  58, 1 );
-
-	//DrawVLine( 6,  19, 119, 1 ); //100 h
-	//DrawVLine( 58, 19, 119, 1 );
         
+/*
         DrawFillRect(6, 19, 58, 120, 1);
         DrawFillRect(7, 20, 57, 119, 0);
         
         DrawVLineDots( 32, 20, 120 ); //100% line
+*/
 
-	int t = EditItemIndex; // * 5;
+	int t = EditItemIndex;
 	int j = -1;
 
 	for ( int i = 0; i < PWR_CURVE_PTS; ++i )
@@ -1573,10 +1574,12 @@ __myevic__ void ShowPowerCurve()
 			if ( t2 == 0 ) t2 = 50;
                         
                         //connecting vert lines for pretty view
+/*
                         DrawHLine( 7 + dfPwrCurve[i+1].power / 4,
                                 20 + 2 * t2,
                                 7 + dfPwrCurve[i].power / 4,
                                 1 );		
+*/
 		}
 		else
 		{
@@ -1585,51 +1588,41 @@ __myevic__ void ShowPowerCurve()
   
                 //DrawVLine( const int x, const int y1, const int y2, const int color )
                 
+/*
 		DrawVLine( 7 + dfPwrCurve[i].power / 4,
                             20 + 2 * t1,
                             19 + 2 * t2,
                             1 );
+*/
                                
 		if (( t2 > t ) && ( j < 0 ))
 		{
 			j = i;
 
+/*
 			if ( t == t1 )
 			{
-/*
-				DrawFillRect(	7,
-								21 + 2 * t1, // / 5,
-								7 + dfPwrCurve[i].power / 4,
-								22 + 2 * t1, // / 5,
-								1 );
-*/
                             //DrawHLine( const int x1, const int y, const int x2, const int color )
                             // pointer line
                             DrawHLine( 7,  20 + 2 * t1,  7 + dfPwrCurve[i].power / 4, 1 );
 			}
+*/
 		}
-                //DrawLine( int x1, int y1, int x2, int y2, int color, int thick )
-                //DrawLine( 7 + dfPwrCurve[i].power / 4,
-                //                    20 + 2 * t1, 
-                //                    7 + dfPwrCurve[i+1].power / 4, 
-                //                    19 + 2 * t2, 
-                //                    1, 1 );                                           
+                                        
 	}
         
+/*
 	if ( !gFlags.edit_value || gFlags.draw_edited_item )
 	{
 		DrawImage( 2, 16 + EditItemIndex *2, 0xD4 ); // ">"
 	}
+*/
 
-	//DrawImage( 12, 3, 0xAF ); // T
-	//DrawValueRight( 44, 3, t, 1, 0x0B, 0 );
-        DrawValue( 6, 5, t, 1, 0x0B, 0 );
-	DrawImage( 22, 5, 0x94 );
+        DrawValue( 6, 3, t, 1, 0x0B, 0 );
+	DrawImage( 22, 3, 0x94 );
 
-	//DrawImage( 12, 13, 0xAB ); //P
-	//DrawValueRight( 44, 13, dfPwrCurve[j].power, 0, 0x0B, 0 );
-        DrawValueRight( 50, 5, dfPwrCurve[j].power, 0, 0x0B, 0 );
-	DrawImage( 52, 5, 0xC2 );
+        DrawValueRight( 50, 3, dfPwrCurve[j].power, 0, 0x0B, 0 );
+	DrawImage( 52, 3, 0xC2 );
 }
 
 

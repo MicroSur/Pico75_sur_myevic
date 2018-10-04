@@ -165,6 +165,7 @@ __myevic__ void SSD1306_PowerOn()
 	WaitOnTMR2( 10 );
 }
 
+/*
 __myevic__ void SSD1306_96_16_PowerOn()
 {
     	//PA0 = 1;
@@ -181,6 +182,7 @@ __myevic__ void SSD1306_96_16_PowerOn()
 
 
 }
+*/
 
 //=========================================================================
 
@@ -244,8 +246,8 @@ const uint8_t SSD1306_96_16_InitSeq[] =
 		0xD3, // Set Display Offset ...
 		0x00, // ... to		
 		0x40,
-                0x8D,
-                0x14,
+                0x8D, //SSD1306_CHARGEPUMP
+                0x14, //SSD1306_EXTERNALVCC 0x14, 0x10
                 0xA0,
                 0xC0,
                 0xDA,
@@ -269,8 +271,8 @@ const uint8_t SSD1306_96_16_InitSeq_2[] =
 		0xD3, // Set Display Offset ...
 		0x00, // ... to		
 		0x40,
-                0xAD,
-                0x8A,
+                0xAD, //
+                0x8A, //
                 0xA0,
                 0xC0,
                 0xDA,

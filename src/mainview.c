@@ -90,7 +90,7 @@ __myevic__ void DrawMode()
 			case 0:
                         case 1:
                         case 2:
-				DrawString( String_TEMP, 10, 0 );
+				DrawString( String_TEMP, 0, 3 );
 				break;
 			//case 1:
 			//	DrawString( String_TEMP, 10, 0 );
@@ -99,16 +99,16 @@ __myevic__ void DrawMode()
 			//	DrawString( String_TEMP, 10, 0 );
 			//	break;
 			case 3:
-				DrawString( String_TCR, 10, 0 );
+				DrawString( String_TCR, 0, 3 );
 				break;
 			case 4:
-                                DrawStringCentered( String_POWER, 0 );
+                                DrawString( String_POWER, 0, 3 );
 				break;
 			case 5:
-				DrawStringCentered( String_BYPASS, 0 );
+				DrawString( String_BYPASS, 0, 3 );
 				break;
 			case 6:
-				DrawStringCentered( String_SMART, 0 );
+				DrawString( String_SMART, 0, 3 );
 				break;
 			default:
 				break;
@@ -120,19 +120,16 @@ __myevic__ void DrawMode()
 		switch ( dfMode )
 		{
 			case 0:
-				DrawString( String_NI, 42, 0 );
+				DrawString( String_NI, 10, 0 );
 				break;
 			case 1:
-				DrawString( String_TI, 42, 0 );
+				DrawString( String_TI, 10, 0 );
 				break;
 			case 2:
-				DrawString( String_SS, 42 , 0 );
-				//DrawImage( 48, 3, 0x04 );
-				//DrawImage( 54, 3, 0x02 );
-				//DrawImage( 59, 3, 0x07 );
+				DrawString( String_SS, 10 , 0 );
 				break;
 			case 3:
-				DrawValue( 35, 0, dfTCRM[dfTCRIndex], 0, 0x0B, 3 ); // 26 TCR value
+				DrawValue( 10, 0, dfTCRM[dfTCRIndex], 0, 0x0B, 3 ); // 26 TCR value
 				//DrawImage( 49, 0, 0xA8 ); //M
 				//DrawValue( 57, 0, dfTCRIndex + 1, 0, 0x0B, 1 ); // 1-2-3
 				break;
@@ -794,7 +791,7 @@ __myevic__ void DrawInfoLines()
 			default:
 				break;
 		}
-                ShowFireDuration( 0 );        
+                //ShowFireDuration( 0 );        
 	}
 	else
 	{
@@ -943,8 +940,8 @@ __myevic__ void DrawPower( int pwr, int yp )
 	{
 		xp = 45;
 
-		DrawValue( 5, yp+1, pwr, 1, 0x48, 2 ); //13
-		DrawImage( 45, yp+8, 0xB9 ); //W
+		DrawValue( 44, yp, pwr, 1, 0x29, 2 ); //13
+		DrawImage( 88, yp+8, 0x7D ); //W
 	}
 	else
 	{
@@ -952,14 +949,14 @@ __myevic__ void DrawPower( int pwr, int yp )
 
 		if ( pwr < 1000 )
 		{
-			DrawValue( 1, yp+1, pwr, 1, 0x48, 3 ); //0->1 for pc, need big dot 4x24
+			DrawValue( 44, yp, pwr, 1, 0x29, 3 ); //0->1 for pc, need big dot 4x24
 		}
 		else
 		{
-			DrawValue( 5, yp+1, pwr / 10, 0, 0x48, 3 );
+			DrawValue( 44, yp, pwr / 10, 0, 0x29, 3 );
 		}
 
-		DrawImage( 54, yp+16, 0x98 ); //w 28
+		DrawImage( 88, yp+8, 0x7E ); //w 28
 	}
     }
     else //one watt
@@ -969,8 +966,8 @@ __myevic__ void DrawPower( int pwr, int yp )
         if ( p < 100 )
 	{
 		xp = 33;
-		DrawValue( 13, yp+1, p / 10, 0, 0x48, 1 ); //13
-		DrawImage( 33, yp+8, 0xB9 ); //W
+		DrawValue( 44, yp, p / 10, 0, 0x29, 1 ); //13
+		DrawImage( 88, yp+8, 0xB9 ); //W
 	}
 	else
 	{
@@ -978,14 +975,14 @@ __myevic__ void DrawPower( int pwr, int yp )
 		if ( p < 1000 )
 		{
                     	xp = 47;
-			DrawValue( 11, yp+1, p / 10, 0, 0x48, 2 ); //13
-                        DrawImage( 47, yp+16, 0xB2 ); //w
+			DrawValue( 44, yp, p / 10, 0, 0x29, 2 ); //13
+                        DrawImage( 88, yp+8, 0xB2 ); //w
 		}
 		else
 		{
                         xp = 54;
-			DrawValue( 3, yp+1, p / 10, 0, 0x48, 3 ); //13
-                        DrawImage( 54, yp+16, 0x98 ); //w 28
+			DrawValue( 44, yp, p / 10, 0, 0x29, 3 ); //13
+                        DrawImage( 88, yp+8, 0x98 ); //w 28
 		}
 		
 	}  
@@ -1177,7 +1174,7 @@ __myevic__ void ShowMainView()
 				pwr = dfTCPower;
 			}
 
-			DrawPower( pwr, 12 );
+			DrawPower( pwr, 0 );
 		}
 		else
 		{
@@ -1193,7 +1190,7 @@ __myevic__ void ShowMainView()
                         pwr = dfSavedCfgPwr[(int)ConfigIndex]; //show fixed power
                 }
                 
-		DrawPower( pwr, 12 );
+		DrawPower( pwr, 0 );
                 
 	}
 

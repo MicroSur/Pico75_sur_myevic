@@ -139,7 +139,7 @@ __myevic__ void DisplaySendCommand( const uint8_t cmd )
 			SSD1327_WriteBytes( 0, &DisplayCmdByte, 1 );
 			break;
                         
-                case 3:                    
+                case 2:                    
 			SSD1306_96_16_WriteBytes( 0, &DisplayCmdByte, 1 );
 			break;                        
 	}
@@ -160,7 +160,7 @@ __myevic__ void DisplaySendData( const uint8_t *data, const uint32_t len )
 			SSD1327_WriteBytes( 0x40, data, len );
 			break;
 
-                case 3:   
+                case 2:   
 			SSD1306_96_16_WriteBytes( 0x40, data, len );
 			break;                        
 	}
@@ -174,6 +174,7 @@ __myevic__ void InitDisplay()
 	switch ( DisplayModel )
 	{
 		case 0:
+                case 2:
 			SSD1306_Init();
 			DrawPoint = SSD1306_Plot+1;
 			break;
@@ -181,11 +182,6 @@ __myevic__ void InitDisplay()
 		case 1:
 			SSD1327_Init();
 			DrawPoint = SSD1327_Plot+1;
-			break;
-                        
-                case 3:
-                    	SSD1306_96_16_Init();
-			DrawPoint = SSD1306_96_16_Plot+1;
 			break;
 	}
         
@@ -207,7 +203,7 @@ __myevic__ void DisplaySetContrast( const uint8_t c )
 	switch ( DisplayModel )
 	{
 		case 0:
-                case 3:
+                case 2:
 			SSD1306_SetContrast( c );
 			break;
 
@@ -223,7 +219,7 @@ __myevic__ void DisplaySetInverse( const uint8_t i )
 	switch ( DisplayModel )
 	{
 		case 0:
-                case 3:    
+                case 2:    
 			SSD1306_SetInverse( i );
 			break;
 
@@ -320,16 +316,13 @@ __myevic__ void ClearScreenBuffer()
 {
 	switch ( DisplayModel )
 	{
-		case 0:    
+		case 0:
+                case 2:    
 			SSD1306_ClearBuffer();
 			break;
 
 		case 1:
 			SSD1327_ClearBuffer();
-			break;
-                        
-                case 3:       
-        		SSD1306_96_16_ClearBuffer();
 			break;
 	}
 }
@@ -342,7 +335,7 @@ __myevic__ void ScreenOff()
 	switch ( DisplayModel )
 	{
 		case 0:
-                case 3:
+                case 2:
 			SSD1306_ScreenOff();
 			break;
 
@@ -360,16 +353,13 @@ __myevic__ void DisplayRefresh()
 	switch ( DisplayModel )
 	{
 		case 0:
+                case 2:                    
 			SSD1306_Refresh();
 			break;
 
 		case 1:
 			SSD1327_Refresh();
 			break;
-                        
-		case 3:
-			SSD1306_96_16_Refresh();
-			break;                        
 	}
 }
 
@@ -482,15 +472,13 @@ __myevic__ uint32_t DrawImage( const int x, const int y, const uint8_t img )
 {
 	switch ( DisplayModel )
 	{
-		case 0:    
+		case 0:   
+                case 2:
 			return SSD1306_Image( x, y, img, 0 );
 
 		case 1:
 			return SSD1327_Image( x, y, img, 0 );
-                        
-                case 3:    
-			return SSD1306_96_16_Image( x, y, img, 0 );
-                        
+                                                
 		default:
 			return 0;
 	}
@@ -500,14 +488,12 @@ __myevic__ uint32_t DrawImageRight( const int x, const int y, const uint8_t img 
 {
 	switch ( DisplayModel )
 	{
-		case 0:    
+		case 0:
+                case 2:                    
 			return SSD1306_Image( x - Images[img - 1]->width, y, img, 0 );
 
 		case 1:
 			return SSD1327_Image( x - Images[img - 1]->width, y, img, 0 );
-                        
-                case 3:    
-			return SSD1306_96_16_Image( x - Images[img - 1]->width, y, img, 0 );
 
 		default:
 			return 0;
@@ -539,14 +525,12 @@ __myevic__ uint32_t DrawImageInv( const int x, const int y, const uint8_t img )
 {
 	switch ( DisplayModel )
 	{
-		case 0:    
+		case 0:
+                case 2:                    
 			return SSD1306_Image( x, y, img, 1 );
 
 		case 1:
 			return SSD1327_Image( x, y, img, 1 );
-                        
-                case 3:    
-			return SSD1306_96_16_Image( x, y, img, 1 );
                         
 		default:
 			return 0;
@@ -598,7 +582,7 @@ __myevic__ void DrawLOGO( const int x, const int y )
 				SSD1327_Bitmap( x, y, img, 0 );
 				break;     
                                 
-                        case 3:       
+                        case 2:       
                                 SSD1306_96_16_Bitmap( x, y, img, 0 );
 				break;
 		}
@@ -884,7 +868,7 @@ __myevic__ void Screen2Bitmap( uint8_t *pu8Bitmap )
 			SSD1327_Screen2Bitmap( pu8Bitmap );
 			break;
                         
-		case 3:
+		case 2:
 			SSD1306_96_16_Screen2Bitmap( pu8Bitmap );
 			break;                        
 	}

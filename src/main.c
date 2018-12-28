@@ -242,14 +242,10 @@ __myevic__ void InitHardware()
 	//	gFlags.noclock = 1;
 	//}
 
-	if ( DisplayModel == 3 )
-        {
-            InitI2C();
-        }
-        else
-        {
+	if ( DisplayModel != 2 )
             InitSPI0();
-        }
+        else
+            InitI2C();
         
 	InitEADC();
 	InitPWM();

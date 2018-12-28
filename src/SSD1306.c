@@ -37,35 +37,34 @@ __myevic__ void SSD1306_Refresh()
 
 	sb = ScreenBuffer;
 
-	for ( int i = 0 ; i < 16 ; ++i )
+	for ( int i = 0 ; i < ( DisplayModel !=2 ? 16 : 2 ) ; ++i )
 	{
 		DisplaySendCommand( 0xB0 + i );
 		DisplaySendCommand( 0 );
-		DisplaySendCommand( ( dfStatus.flipped ) ? 0x12 : 0x10 );
                 
-		DisplaySendData( sb, 64 ); //64 * 16 = 1024 = 64 * 128 / 8 ;bytes
-		sb += 64;
+                if ( DisplayModel != 2 )
+                {
+                    DisplaySendCommand( ( dfStatus.flipped ) ? 0x12 : 0x10 );
+                    DisplaySendData( sb, 64 ); //64 * 16 = 1024 = 64 * 128 / 8 ;bytes
+                    sb += 64;                    
+                }
+                else
+                {
+                    DisplaySendCommand( ( dfStatus.flipped ) ? 0x10 : 0x12 );
+                    DisplaySendData( sb, 96 ); //64 * 16 = 1024 = 64 * 128 / 8 ;bytes
+                    sb += 96;                    
+                }
+                
+
 	}
 }
 
+/*
 __myevic__ void SSD1306_96_16_Refresh()
 {
 	uint8_t *sb;
 
-	sb = ScreenBuffer_96_16;
-
-/*
-        for ( int i = 0 ; i < 2 ; ++i )
-	{
-		DisplaySendCommand( 0xB0 + i );
-		DisplaySendCommand( 0 );
-		DisplaySendCommand( ( dfStatus.flipped ) ? 0x12 : 0x10 );
-                
-		DisplaySendData( sb, 96 ); //64 * 16 = 1024 = 64 * 128 / 8 ;bytes
-		sb += 96;
-	}
-*/
-        
+	sb = ScreenBuffer_96_16;    
 
 	for ( int i = 0 ; i < 2 ; ++i )
 	{
@@ -90,6 +89,7 @@ __myevic__ void SSD1306_96_16_Refresh()
 	}
 
 }
+*/
 
 //=========================================================================
 //----- (000055D8) --------------------------------------------------------
@@ -109,12 +109,13 @@ __myevic__ void SSD1306_ClearBuffer()
 			++v2;
 			*v0++ = 0;
 		}
-		while ( v2 < 64 );
+		while ( v2 < ( DisplayModel !=2 ? 64 : 96 ) );
 		++v1;
 	}
-	while ( v1 < 16 );
+	while ( v1 < ( DisplayModel !=2 ? 16 : 2 ) );
 }
 
+/*
 __myevic__ void SSD1306_96_16_ClearBuffer()
 {
 	uint8_t *v0;
@@ -136,6 +137,7 @@ __myevic__ void SSD1306_96_16_ClearBuffer()
 	}
 	while ( v1 < 2 );
 }
+*/
 
 
 //=========================================================================
@@ -146,11 +148,13 @@ __myevic__ void SSD1306_CLS()
 	SSD1306_Refresh();
 }
 
+/*
 __myevic__ void SSD1306_96_16_CLS()
 {
 	SSD1306_96_16_ClearBuffer();
 	SSD1306_96_16_Refresh();
 }
+*/
 
 //=========================================================================
 //----- (000055A4) --------------------------------------------------------
@@ -186,6 +190,58 @@ __myevic__ void SSD1306_96_16_PowerOn()
 
 //=========================================================================
 
+/*
+const uint8_t SSD1306_96_16_InitSeq[] =
+	{	0xAE, //Set Display ON/OFF (AFh/AEh)
+                0xD5, //Set Display Clock Divide Ratio/Oscillator Frequency, SETDISPLAYCLOCKDIV
+                0x52, // ... to
+		0xA8, //Set Multiplex Ratio...
+		0x0F, //...to 63 (all scr visible)
+		0xD3, // Set Display Offset ...
+		0x00, // ... to		
+		0x40,
+                0x8D, //SSD1306_CHARGEPUMP
+                0x14, //SSD1306_EXTERNALVCC 0x14, 0x10
+                0xA0,
+                0xC0,
+                0xDA,
+                0x02,
+		0x81, // Set Contrast (0~255) ...
+		0x56, // ... to 
+                0xD9, //Set Pre-charge Period
+                0xF1,
+		0xDB, // Set VCOMH Deselect Level, adjusts the VCOMH regulator output, SETVCOMDETECT
+	        0x20, // 00h 20h_def 30h // 00 - darker but artefacts when lighter
+		0xA4, //def //Entire Display ON, DISPLAYALLON_RESUME,  Output follows RAM content 
+		0xA6, //Set Normal/Inverse Display (A6h/A7h)
+        };
+*/
+
+const uint8_t SSD1306_96_16_InitSeq_2[] =
+	{	0xAE, //Set Display ON/OFF (AFh/AEh)
+                0xD5, //Set Display Clock Divide Ratio/Oscillator Frequency, SETDISPLAYCLOCKDIV
+                0x52, // ... to
+		0xA8, //Set Multiplex Ratio...
+		0x0F, //...to 63 (all scr visible)
+		0xD3, // Set Display Offset ...
+		0x00, // ... to		
+		0x40,
+                0xAD, //
+                0x8A, //
+                0xA0,
+                0xC0,
+                0xDA,
+                0x02,
+		0x81, // Set Contrast (0~255) ...
+		0x56, // ... to 
+                0xD9, //Set Pre-charge Period
+                0x22,
+		0xDB, // Set VCOMH Deselect Level, adjusts the VCOMH regulator output, SETVCOMDETECT
+	        0x40, // 00h 20h_def 30h // 00 - darker but artefacts when lighter
+		0xA4, //def //Entire Display ON, DISPLAYALLON_RESUME,  Output follows RAM content 
+		0xA6, //Set Normal/Inverse Display (A6h/A7h)
+        };
+
 const uint8_t SSD1306_InitSeq[] =
 	{	0xAE, //Set Display ON/OFF (AFh/AEh) 
 		0xA8, //Set Multiplex Ratio...
@@ -217,76 +273,45 @@ __myevic__ void SSD1306_Init()
 {
 	SSD1306_PowerOn();
 
-	for ( int i = 0 ; i < sizeof( SSD1306_InitSeq ) ; ++i )
-	{
+        if ( DisplayModel != 2 )
+        {
+            for ( int i = 0 ; i < sizeof( SSD1306_InitSeq ) ; ++i )
+            {
 		DisplaySendCommand( SSD1306_InitSeq[i] );
-	}
-
-	if ( dfStatus.flipped )
-	{
-		DisplaySendCommand( 0xC0 ); // Set COM Output Scan Direction (C0h/C8h) vert flip
-		DisplaySendCommand( 0xD3 ); // Set Display Offset ...
-		DisplaySendCommand( 0x60 ); // ... to
-		DisplaySendCommand( 0xDC );
-		DisplaySendCommand( 0x20 );
-		DisplaySendCommand( 0xA0 ); //Set Segment Re-map (A0h/A1h) hor flip
-	}
+            }
+            
+            if ( dfStatus.flipped )
+            {
+                DisplaySendCommand( 0xC0 ); // Set COM Output Scan Direction (C0h/C8h) vert flip
+                DisplaySendCommand( 0xD3 ); // Set Display Offset ...
+                DisplaySendCommand( 0x60 ); // ... to
+                DisplaySendCommand( 0xDC );
+                DisplaySendCommand( 0x20 );
+                DisplaySendCommand( 0xA0 ); //Set Segment Re-map (A0h/A1h) hor flip
+            }
+            
+        }
+        else
+        {
+            for ( int i = 0 ; i < sizeof( SSD1306_96_16_InitSeq_2 ) ; ++i )
+            {
+		DisplaySendCommand( SSD1306_96_16_InitSeq_2[i] );
+            }
+            
+            if ( dfStatus.flipped )
+            {
+                DisplaySendCommand( 0xA1 );
+                DisplaySendCommand( 0xC8 );
+            }            
+            
+        }
 
 	SSD1306_CLS();
 	DisplaySendCommand( 0xAF ); //Display On
 	WaitOnTMR2( 20 );
 }
 
-const uint8_t SSD1306_96_16_InitSeq[] =
-	{	0xAE, //Set Display ON/OFF (AFh/AEh)
-                0xD5, //Set Display Clock Divide Ratio/Oscillator Frequency, SETDISPLAYCLOCKDIV
-                0x52, // ... to
-		0xA8, //Set Multiplex Ratio...
-		0x0F, //...to 63 (all scr visible)
-		0xD3, // Set Display Offset ...
-		0x00, // ... to		
-		0x40,
-                0x8D, //SSD1306_CHARGEPUMP
-                0x14, //SSD1306_EXTERNALVCC 0x14, 0x10
-                0xA0,
-                0xC0,
-                0xDA,
-                0x02,
-		0x81, // Set Contrast (0~255) ...
-		0x56, // ... to 
-                0xD9, //Set Pre-charge Period
-                0xF1,
-		0xDB, // Set VCOMH Deselect Level, adjusts the VCOMH regulator output, SETVCOMDETECT
-	        0x20, // 00h 20h_def 30h // 00 - darker but artefacts when lighter
-		0xA4, //def //Entire Display ON, DISPLAYALLON_RESUME,  Output follows RAM content 
-		0xA6, //Set Normal/Inverse Display (A6h/A7h)
-        };
-
-const uint8_t SSD1306_96_16_InitSeq_2[] =
-	{	0xAE, //Set Display ON/OFF (AFh/AEh)
-                0xD5, //Set Display Clock Divide Ratio/Oscillator Frequency, SETDISPLAYCLOCKDIV
-                0x52, // ... to
-		0xA8, //Set Multiplex Ratio...
-		0x0F, //...to 63 (all scr visible)
-		0xD3, // Set Display Offset ...
-		0x00, // ... to		
-		0x40,
-                0xAD, //
-                0x8A, //
-                0xA0,
-                0xC0,
-                0xDA,
-                0x02,
-		0x81, // Set Contrast (0~255) ...
-		0x56, // ... to 
-                0xD9, //Set Pre-charge Period
-                0x22,
-		0xDB, // Set VCOMH Deselect Level, adjusts the VCOMH regulator output, SETVCOMDETECT
-	        0x40, // 00h 20h_def 30h // 00 - darker but artefacts when lighter
-		0xA4, //def //Entire Display ON, DISPLAYALLON_RESUME,  Output follows RAM content 
-		0xA6, //Set Normal/Inverse Display (A6h/A7h)
-        };
-
+/*
 __myevic__ void SSD1306_96_16_Init()
 {
 	//SSD1306_96_16_PowerOn();
@@ -307,6 +332,7 @@ __myevic__ void SSD1306_96_16_Init()
 	DisplaySendCommand( 0xAF ); //Display On
 	WaitOnTMR2( 20 );
 }
+*/
 
 //=========================================================================
 __myevic__ void SSD1306_SetContrast( const uint8_t c )
@@ -346,11 +372,22 @@ __myevic__ void SSD1306_Plot( int x, int y, int color )
 	uint8_t mask;
 	uint32_t i;
 
-	if (( x < 0 ) || ( x >  63 )) return;
-	if (( y < 0 ) || ( y > 127 )) return;
+        if ( DisplayModel != 2 )
+        {
+            if (( x < 0 ) || ( x >  63 )) return;
+            if (( y < 0 ) || ( y > 127 )) return;
+            
+            i = x + ( ( y & ~7 ) << 3 ); 
+        }
+        else
+        {
+            if (( x < 0 ) || ( x > 95 )) return;
+            if (( y < 0 ) || ( y > 15 )) return;   
+            
+            i =  x + ( ( ( y >> 3 ) + ( ( y >> 3 ) << 1 ) ) << 5 );
+        }
         
 	mask = 1 << ( y & 7 );
-	i = x + ( ( y & ~7 ) << 3 );
 
 	if ( color == 1 )
 	{
@@ -366,6 +403,7 @@ __myevic__ void SSD1306_Plot( int x, int y, int color )
 	}
 }
 
+/*
 __myevic__ void SSD1306_96_16_Plot( int x, int y, int color )
 {
     //for DrawPoint()
@@ -392,6 +430,7 @@ __myevic__ void SSD1306_96_16_Plot( int x, int y, int color )
 		ScreenBuffer_96_16[i] ^= mask;
 	}
 }
+*/
 
 
 //=========================================================================
@@ -402,9 +441,14 @@ __myevic__ uint32_t SSD1306_Image( int x, int y, uint8_t img, int color )
 	{
 		y += 2;
 	}
-	return SSD1306_Bitmap( x, y, Images[img - 1], color );
+        
+        if ( DisplayModel != 2 )
+            return SSD1306_Bitmap( x, y, Images[img - 1], color );
+        else
+            return SSD1306_96_16_Bitmap( x, y, Images[img - 1], color );
 }
 
+/*
 __myevic__ uint32_t SSD1306_96_16_Image( int x, int y, uint8_t img, int color )
 {
 	if ( img == 0x88 || img == 0x8B || img == 0x91 || img == 0x92 || img == 0x9A )
@@ -413,6 +457,7 @@ __myevic__ uint32_t SSD1306_96_16_Image( int x, int y, uint8_t img, int color )
 	}
 	return SSD1306_96_16_Bitmap( x, y, Images[img - 1], color );
 }
+*/
 
 //=========================================================================
 //----- (00005628) --------------------------------------------------------
@@ -538,20 +583,20 @@ __myevic__ uint32_t SSD1306_96_16_Bitmap( int x, int y, const image_t *image, in
 			{
 				if ( addr < SCREEN_BUFFER_SIZE_96_16 )
 				{
-					ScreenBuffer_96_16[ addr ] &= ByteMaskRight[shift];
-					ScreenBuffer_96_16[ addr ] |= ( pixels << shift ) & ByteMaskLeft[shift];
+					ScreenBuffer[ addr ] &= ByteMaskRight[shift];
+					ScreenBuffer[ addr ] |= ( pixels << shift ) & ByteMaskLeft[shift];
 				}
 				if ( addr + 96 < SCREEN_BUFFER_SIZE_96_16 )
 				{
-					ScreenBuffer_96_16[ addr + 96 ] &= ByteMaskLeft[shift];
-					ScreenBuffer_96_16[ addr + 96 ] |= ( pixels >> ( 8 - shift )) & ByteMaskRight[shift];
+					ScreenBuffer[ addr + 96 ] &= ByteMaskLeft[shift];
+					ScreenBuffer[ addr + 96 ] |= ( pixels >> ( 8 - shift )) & ByteMaskRight[shift];
 				}
 			}
 			else
 			{
 				if ( addr < SCREEN_BUFFER_SIZE_96_16 )
 				{
-					ScreenBuffer_96_16[ addr ] = pixels;
+					ScreenBuffer[ addr ] = pixels;
 				}
 			}
 
@@ -622,7 +667,7 @@ __myevic__ void SSD1306_96_16_Screen2Bitmap( uint8_t *pu8Bitmap )
                         
 			for ( int x = 0 ; x < 96 ; ++x )
 			{
-				if ( ScreenBuffer_96_16[ line * 96 + x ] & mask )
+				if ( ScreenBuffer[ line * 96 + x ] & mask )
 				{
 					pu8Bitmap[ y + ( x >> 3 ) ] |= ( 128 >> ( x & 7 ) );
 				}

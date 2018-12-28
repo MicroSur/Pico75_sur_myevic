@@ -180,6 +180,14 @@ __myevic__ void KeyRepeat()
 		{
 			Event = dfStatus2.swap_mp ? 2: 3;
 		}
+                
+                if ( ISPICO75 )
+                {
+                    if ( Event == 2 )
+                        Event = 3;
+                    else if ( Event == 3 )
+                        Event = 2;
+                }           
 	}
 }
 

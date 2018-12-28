@@ -647,6 +647,8 @@ __myevic__ void ShowContrast()
 
         dfc = ContrastNum ? dfContrast2 : dfContrast;   
 
+    if ( DisplayModel != 2 )
+    {
         DrawValueRight( 63, 6, ContrastNum+1, 0, 0x0B, 1 );
 	DrawString( String_Contrast, 4, 5 );
 	DrawHLine( 0, 16, 63, 1 );
@@ -657,13 +659,6 @@ __myevic__ void ShowContrast()
 	DrawValue( x, 20, pc, 0, 0x0B, 0 );
 	DrawImage( x + 6 * nd, 20, 0xC2 );
 
-	DrawFillRect( 0, 32, 63, 44, 1 );
-	DrawFillRect( 1, 33, 62, 43, 0 );
-	if ( dfc )
-	{
-		DrawFillRect( 2, 34, 2 + ( ( 59 * dfc ) / 255 ), 42, 1 );
-	}
-
 	DrawStringCentered( String_LongFire, 53 );
 	DrawStringCentered( String_Exit, 64 );
         
@@ -671,6 +666,25 @@ __myevic__ void ShowContrast()
 	dfStatus.nologo = 0;
         DrawLOGO( 0, 80 );
         dfStatus.nologo = t;
+        
+        DrawFillRect( 0, 32, 63, 44, 1 );
+	DrawFillRect( 1, 33, 62, 43, 0 );
+	if ( dfc )
+	{
+		DrawFillRect( 2, 34, 2 + ( ( 59 * dfc ) / 255 ), 42, 1 );
+	}
+        
+    }
+    else
+    {
+        DrawFillRect( 0, 0, 63, 11, 1 );
+	DrawFillRect( 1, 1, 62, 10, 0 );
+	if ( dfc )
+	{
+		DrawFillRect( 2, 2, 2 + ( ( 59 * dfc ) / 255 ), 9, 1 );
+	}
+    }
+        
 }
 
 
@@ -1333,7 +1347,7 @@ __myevic__ void ShowScreenSaver()
 
 		case SSAVER_LOGO:
 		{
-                    if ( DisplayModel == 3)
+                    if ( DisplayModel == 2)
                     {
                         DrawLOGO( 0, 0 );
                     }

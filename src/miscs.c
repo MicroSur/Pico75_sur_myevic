@@ -911,7 +911,7 @@ __myevic__ void rotate_object( pt3d_t *dst, const obj3d_t *src, const matrix3d_t
 
         if ( Screen == 60 )
         {
-            if ( DisplayModel == 3 )
+            if ( DisplayModel == 2 )
             {
                 s = src->scale / 2;
             }
@@ -991,7 +991,7 @@ __myevic__ void anim3d() //( int redraw_last )
 
         if ( Screen == 60 )
         {
-            if ( DisplayModel == 3 )
+            if ( DisplayModel == 2 )
             {
             cY = 8;                
             }
